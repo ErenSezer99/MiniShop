@@ -1,8 +1,6 @@
 <?php
 // Çıkış sayfası
 
-session_start();
-
 // Tüm session verilerini temizle
 $_SESSION = [];
 

@@ -1,6 +1,11 @@
 <?php
 // Genel kullanılacak fonksiyonlar buraya yazılacak
 
+// tüm proje için tek session kontrol noktası
+if (session_status() !== PHP_SESSION_ACTIVE) {
+  session_start();
+}
+
 // Veriyi temizleme - XSS koruması için
 function sanitize($data)
 {

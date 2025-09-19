@@ -1,7 +1,6 @@
 <?php
 // Giriş sayfası
 
-session_start();
 include "config/database.php";
 include "includes/functions.php";
 
