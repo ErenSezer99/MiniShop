@@ -5,43 +5,74 @@ include_once __DIR__ . '/../config/database.php';
 include_once __DIR__ . '/header.php';
 require_admin();
 
-// Kategori silme işlemi
-if (isset($_GET['delete_id'])) {
-    $delete_id = sanitize($_GET['delete_id']);
-    $stmt = $pdo->prepare("DELETE FROM categories WHERE id = ?");
-    $stmt->execute([$delete_id]);
-    set_flash("Kategori başarıyla silindi.", "success");
-    redirect('categories.php');
+// Düzenlenecek kategori bilgisi
+$edit_category = null;
+if (isset($_GET['edit'])) {
+    $edit_id = $_GET['edit'];
+    $stmt = $pdo->prepare("SELECT * FROM categories WHERE id = ?");
+    $stmt->execute([$edit_id]);
+    $edit_category = $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
-// Kategori ekleme işlemi
+// POST işlemleri: ekleme veya güncelleme
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = sanitize($_POST['name']);
+    $edit_id = $_POST['edit_id'] ?? null;
+
     if (!empty($name)) {
-        $stmt = $pdo->prepare("INSERT INTO categories (name) VALUES (?)");
-        $stmt->execute([$name]);
-        $success = "Kategori başarıyla eklendi.";
+        if ($edit_id) {
+            // Güncelleme
+            $stmt = $pdo->prepare("UPDATE categories SET name = ? WHERE id = ?");
+            $stmt->execute([$name, $edit_id]);
+
+            set_flash("Kategori başarıyla güncellendi.", "success");
+            redirect("categories.php");
+        } else {
+            // Yeni kategori ekleme
+            $stmt = $pdo->prepare("INSERT INTO categories (name) VALUES (?)");
+            $stmt->execute([$name]);
+
+            set_flash("Kategori başarıyla eklendi.", "success");
+            redirect("categories.php");
+        }
     } else {
-        $error = "Kategori adı boş olamaz.";
+        set_flash("Kategori adı boş olamaz.", "error");
+        redirect("categories.php");
     }
+}
+
+// Kategori silme işlemi
+if (isset($_GET['delete'])) {
+    $delete_id = $_GET['delete'];
+    $stmt = $pdo->prepare("DELETE FROM categories WHERE id = ?");
+    $stmt->execute([$delete_id]);
+
+    set_flash("Kategori başarıyla silindi.", "success");
+    redirect("categories.php");
 }
 
 // Mevcut kategorileri çek
 $stmt = $pdo->query("SELECT * FROM categories ORDER BY created_at DESC");
 $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
 
 <div class="container">
     <h2>Kategoriler</h2>
 
-    <?php if (!empty($success)) echo "<p style='color:green;'>$success</p>"; ?>
-    <?php if (!empty($error)) echo "<p style='color:red;'>$error</p>"; ?>
+    <?php
+    $flash = get_flash();
+    if ($flash) {
+        echo "<p style='color:" . ($flash['type'] === 'success' ? 'green' : 'red') . ";'>" . sanitize($flash['message']) . "</p>";
+    }
+    ?>
 
-    <!-- Kategori ekleme formu -->
+    <!-- Kategori ekleme / güncelleme formu -->
     <form method="post">
-        <label for="name">Yeni Kategori:</label>
-        <input type="text" name="name" id="name" required>
-        <button type="submit">Ekle</button>
+        <label for="name"><?= $edit_category ? 'Kategori Adını Düzenle:' : 'Yeni Kategori:' ?></label>
+        <input type="text" name="name" id="name" required value="<?= $edit_category ? htmlspecialchars($edit_category['name']) : '' ?>">
+        <input type="hidden" name="edit_id" value="<?= $edit_category['id'] ?? '' ?>">
+        <button type="submit"><?= $edit_category ? 'Güncelle' : 'Ekle' ?></button>
     </form>
 
     <!-- Kategori listesi -->
@@ -58,7 +89,8 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <td><?= htmlspecialchars($cat['name']); ?></td>
                 <td><?= htmlspecialchars($cat['created_at']); ?></td>
                 <td>
-                    <a href="categories.php?delete_id=<?= htmlspecialchars($cat['id']); ?>" onclick="return confirm('Bu kategoriyi silmek istediğinize emin misiniz?')">Sil</a>
+                    <a href="categories.php?edit=<?= urlencode($cat['id']); ?>">Düzenle</a>
+                    <a href="categories.php?delete=<?= urlencode($cat['id']); ?>" onclick="return confirm('Bu kategoriyi silmek istediğinize emin misiniz?')">Sil</a>
                 </td>
             </tr>
         <?php endforeach; ?>
