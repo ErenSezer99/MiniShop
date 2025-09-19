@@ -5,6 +5,15 @@ include_once __DIR__ . '/../config/database.php';
 include_once __DIR__ . '/header.php';
 require_admin();
 
+// Kategori silme işlemi
+if (isset($_GET['delete_id'])) {
+    $delete_id = sanitize($_GET['delete_id']);
+    $stmt = $pdo->prepare("DELETE FROM categories WHERE id = ?");
+    $stmt->execute([$delete_id]);
+    set_flash("Kategori başarıyla silindi.", "success");
+    redirect('categories.php');
+}
+
 // Kategori ekleme işlemi
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = sanitize($_POST['name']);
@@ -41,12 +50,16 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <th>ID</th>
             <th>Kategori Adı</th>
             <th>Oluşturulma Tarihi</th>
+            <th>İşlemler</th>
         </tr>
         <?php foreach ($categories as $cat): ?>
             <tr>
                 <td><?= htmlspecialchars($cat['id']); ?></td>
                 <td><?= htmlspecialchars($cat['name']); ?></td>
                 <td><?= htmlspecialchars($cat['created_at']); ?></td>
+                <td>
+                    <a href="categories.php?delete_id=<?= htmlspecialchars($cat['id']); ?>" onclick="return confirm('Bu kategoriyi silmek istediğinize emin misiniz?')">Sil</a>
+                </td>
             </tr>
         <?php endforeach; ?>
     </table>
