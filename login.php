@@ -1,8 +1,8 @@
 <?php
 // Giriş sayfası
 
-include_once "config/database.php";
-include_once "includes/functions.php";
+include_once __DIR__ . "/includes/functions.php";
+include_once __DIR__ . "/config/database.php";
 
 $flash = get_flash();
 $message = "";
@@ -25,9 +25,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($user && password_verify($password, $user['password'])) {
                 // Giriş başarılı
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['username'] = $user['username'];
-                $_SESSION['role'] = $user['role'] ?? 'user';
+                $_SESSION['user'] = [
+                    'id' => $user['id'],
+                    'username' => $user['username'],
+                    'role' => $user['role'] ?? 'user'
+                ];
 
                 set_flash("Başarıyla giriş yapıldı.", "success");
                 redirect("index.php");

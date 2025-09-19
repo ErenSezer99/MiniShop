@@ -1,6 +1,9 @@
 <?php
 // Admin dashboard
-include_once __DIR__ . '/header.php';
+include_once __DIR__ . '/../includes/functions.php';
+include_once __DIR__ . '/../config/database.php';
+require_admin();
+
 
 // Basit istatistik sorguları (try/catch ile hata güvenliği)
 try {

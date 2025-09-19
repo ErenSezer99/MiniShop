@@ -73,18 +73,21 @@ function get_flash()
  */
 function is_logged_in()
 {
-  if (session_status() !== PHP_SESSION_ACTIVE) {
-    session_start();
-  }
-  return !empty($_SESSION['user_id']);
+  return isset($_SESSION['user']) && is_array($_SESSION['user']) && !empty($_SESSION['user']['id']);
 }
+
 
 function current_user_id()
 {
-  if (session_status() !== PHP_SESSION_ACTIVE) {
-    session_start();
+  return $_SESSION['user']['id'] ?? null;
+}
+
+function require_admin()
+{
+  if (!is_logged_in() || ($_SESSION['user']['role'] ?? '') !== 'admin') {
+    set_flash("Bu sayfaya erişim yetkiniz yok.", "error");
+    redirect('../login.php');
   }
-  return $_SESSION['user_id'] ?? null;
 }
 
 /*

@@ -1,5 +1,5 @@
 <?php
-include_once "functions.php";
+include_once __DIR__ . '/functions.php';
 ?>
 <!DOCTYPE html>
 <html lang="tr">
@@ -14,13 +14,17 @@ include_once "functions.php";
   <header>
     <h1>MiniShop</h1>
     <nav>
-      <?php if (is_logged_in()): ?>
+      <a href="index.php">Ana Sayfa</a>
+      <a href="products.php">Ürünler</a>
+      <a href="cart.php">Sepet</a>
+
+      <?php if (isset($_SESSION['user'])): ?>
         <!-- Kullanıcı giriş yapmışsa -->
-        <a href="index.php">Ana Sayfa</a>
-        <a href="products.php">Ürünler</a>
-        <a href="cart.php">Sepet</a>
-        <span>Hoşgeldin, <?php echo sanitize($_SESSION['username']); ?>!</span>
+        <span>Hoşgeldin, <?php echo sanitize($_SESSION['user']['username']); ?>!</span>
         <a href="logout.php">Çıkış Yap</a>
+        <?php if ($_SESSION['user']['role'] === 'admin'): ?>
+          <a href="admin/index.php">Dashboard</a>
+        <?php endif; ?>
       <?php else: ?>
         <!-- Kullanıcı giriş yapmamışsa -->
         <a href="login.php">Giriş Yap</a>
