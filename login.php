@@ -1,8 +1,8 @@
 <?php
 // Giriş sayfası
 
-include "config/database.php";
-include "includes/functions.php";
+include_once "config/database.php";
+include_once "includes/functions.php";
 
 $flash = get_flash();
 $message = "";
