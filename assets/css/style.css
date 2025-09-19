@@ -1,0 +1,45 @@
+header.admin-nav {
+            background: #f4f4f4;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        header.admin-nav a {
+            margin-right: 10px;
+        }
+
+        .flash {
+            padding: 8px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+
+        .flash.success {
+            background: #e6ffea;
+            border: 1px solid #b6f0c2;
+        }
+
+        .flash.error {
+            background: #ffe6e6;
+            border: 1px solid #f0b6b6;
+        }
+
+        .admin-stats {
+            display: flex;
+            gap: 16px;
+            margin: 16px 0;
+        }
+
+        .admin-stat {
+            padding: 12px;
+            border-radius: 6px;
+            background: #fff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .05);
+        }
+
+footer {
+    margin-top: 20px;
+    padding: 10px;
+    text-align: center;
+    color: #666;
+}
