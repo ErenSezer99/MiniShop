@@ -38,12 +38,25 @@ if (isset($_POST['add_product'])) {
     exit;
 }
 
-// Ürünleri çekme sorgusu
+// --- Pagination ayarları ---
+$limit = 5;
+$page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int) $_GET['page'] : 1;
+$offset = ($page - 1) * $limit;
+
+// Toplam ürün sayısı
+$total_stmt = $pdo->query("SELECT COUNT(*) FROM products");
+$total_products = $total_stmt->fetchColumn();
+$total_pages = ceil($total_products / $limit);
+
+// Ürünleri çekme sorgusu (limitli)
 $sql = "SELECT p.id, p.name, p.description, p.price, p.stock, p.image, c.name AS category_name
         FROM products p
         LEFT JOIN categories c ON p.category_id = c.id
-        ORDER BY p.id DESC";
+        ORDER BY p.id DESC
+        LIMIT :limit OFFSET :offset";
 $stmt = $pdo->prepare($sql);
+$stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
 $stmt->execute();
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -113,6 +126,18 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </tr>
     <?php endforeach; ?>
 </table>
+
+<!-- Sayfalama Linkleri -->
+<div style="margin-top:15px;">
+    <?php if ($total_pages > 1): ?>
+        <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+            <a href="products.php?page=<?= $i ?>"
+                style="margin:0 5px; <?= $i == $page ? 'font-weight:bold; text-decoration:underline;' : '' ?>">
+                <?= $i ?>
+            </a>
+        <?php endfor; ?>
+    <?php endif; ?>
+</div>
 
 <?php
 include_once __DIR__ . '/footer.php';

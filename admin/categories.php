@@ -21,14 +21,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!empty($name)) {
         if ($edit_id) {
-            // Güncelleme
             $stmt = $pdo->prepare("UPDATE categories SET name = ? WHERE id = ?");
             $stmt->execute([$name, $edit_id]);
 
             set_flash("Kategori başarıyla güncellendi.", "success");
             redirect("categories.php");
         } else {
-            // Yeni kategori ekleme
             $stmt = $pdo->prepare("INSERT INTO categories (name) VALUES (?)");
             $stmt->execute([$name]);
 
@@ -51,8 +49,21 @@ if (isset($_GET['delete'])) {
     redirect("categories.php");
 }
 
-// Mevcut kategorileri çek
-$stmt = $pdo->query("SELECT * FROM categories ORDER BY created_at DESC");
+// Sayfalama ayarları
+$limit = 10;
+$page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int) $_GET['page'] : 1;
+$offset = ($page - 1) * $limit;
+
+// Toplam kategori sayısı
+$total_stmt = $pdo->query("SELECT COUNT(*) FROM categories");
+$total_categories = $total_stmt->fetchColumn();
+$total_pages = ceil($total_categories / $limit);
+
+// Mevcut kategorileri çek (limitli)
+$stmt = $pdo->prepare("SELECT * FROM categories ORDER BY created_at DESC LIMIT :limit OFFSET :offset");
+$stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+$stmt->execute();
 $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
@@ -95,6 +106,18 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </tr>
         <?php endforeach; ?>
     </table>
+
+    <!-- Sayfalama linkleri -->
+    <div style="margin-top:15px;">
+        <?php if ($total_pages > 1): ?>
+            <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                <a href="categories.php?page=<?= $i ?>"
+                    style="margin:0 5px; <?= $i == $page ? 'font-weight:bold; text-decoration:underline;' : '' ?>">
+                    <?= $i ?>
+                </a>
+            <?php endfor; ?>
+        <?php endif; ?>
+    </div>
 </div>
 
 <?php include_once __DIR__ . '/footer.php'; ?>
