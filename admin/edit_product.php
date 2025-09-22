@@ -4,23 +4,25 @@ include_once __DIR__ . '/../config/database.php';
 include_once __DIR__ . '/header.php';
 require_admin();
 
-// Geçerli ürün ID kontrolü
-if (!isset($_GET['id']) || empty($_GET['id'])) {
-    die("Geçersiz ürün ID");
+if (!isset($_GET['id'])) {
+    redirect('products.php');
+    exit;
 }
-$product_id = (int) $_GET['id'];
 
-// Ürün bilgilerini çek
-$sql = "SELECT * FROM products WHERE id = :id";
-$stmt = $pdo->prepare($sql);
+$product_id = (int)$_GET['id'];
+
+// Ürünü çek
+$stmt = $pdo->prepare("SELECT * FROM products WHERE id = :id");
 $stmt->execute([':id' => $product_id]);
 $product = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$product) {
-    die("Ürün bulunamadı.");
+    set_flash('Ürün bulunamadı!', 'error');
+    redirect('products.php');
+    exit;
 }
 
-// Güncelleme işlemi
+// Ürün güncelleme işlemi
 if (isset($_POST['update_product'])) {
     $name = $_POST['name'];
     $description = $_POST['description'];
@@ -29,15 +31,18 @@ if (isset($_POST['update_product'])) {
     $category_id = $_POST['category_id'];
     $image = $product['image'];
 
-    // Yeni resim yüklendiyse değiştir
     if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
         $ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
-        $newImage = uniqid() . '.' . $ext;
-        move_uploaded_file($_FILES['image']['tmp_name'], __DIR__ . '/../uploads/' . $newImage);
-        $image = $newImage;
+        $image = uniqid() . '.' . $ext;
+        move_uploaded_file($_FILES['image']['tmp_name'], __DIR__ . '/../uploads/' . $image);
+
+        // Önceki resmi sil
+        if (!empty($product['image'])) {
+            $old_image = __DIR__ . '/../uploads/' . $product['image'];
+            if (file_exists($old_image)) unlink($old_image);
+        }
     }
 
-    // Veritabanını güncelle
     $sql_update = "UPDATE products 
                    SET name = :name, description = :description, price = :price, 
                        stock = :stock, category_id = :category_id, image = :image
@@ -53,7 +58,8 @@ if (isset($_POST['update_product'])) {
         ':id' => $product_id
     ]);
 
-    redirect("products.php");
+    set_flash('Ürün başarıyla güncellendi!');
+    redirect('products.php');
     exit;
 }
 
@@ -85,19 +91,13 @@ $categories = $catStmt->fetchAll(PDO::FETCH_ASSOC);
         <?php endforeach; ?>
     </select><br>
 
-    <label>Mevcut Resim:</label>
-    <?php if ($product['image']): ?>
-        <img src="../uploads/<?= $product['image'] ?>" alt="<?= htmlspecialchars($product['name']) ?>" width="80"><br>
-    <?php else: ?>
-        <p>Resim yok</p>
-    <?php endif; ?>
-
-    <label>Yeni Resim (opsiyonel):</label>
+    <label>Resim:</label>
     <input type="file" name="image"><br>
+    <?php if (!empty($product['image'])): ?>
+        <img src="../uploads/<?= $product['image'] ?>" width="80" alt="Ürün Resmi">
+    <?php endif; ?>
 
     <button type="submit" name="update_product">Güncelle</button>
 </form>
 
-<?php
-include_once __DIR__ . '/footer.php';
-?>
+<?php include_once __DIR__ . '/footer.php'; ?>

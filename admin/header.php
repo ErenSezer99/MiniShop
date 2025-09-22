@@ -31,3 +31,4 @@ require_admin();
             echo '<div class="flash ' . $type . '">' . sanitize($flash['message']) . '</div>';
         }
         ?>
+        <script src="../assets/js/main.js"></script>

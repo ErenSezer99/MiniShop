@@ -33,7 +33,9 @@ if (isset($_POST['add_product'])) {
         ':image' => $image
     ]);
 
-    echo "<p style='color:green;'>Ürün başarıyla eklendi!</p>";
+    set_flash('Ürün başarıyla eklendi!');
+    redirect('products.php');
+    exit;
 }
 
 // Ürünleri çekme sorgusu
