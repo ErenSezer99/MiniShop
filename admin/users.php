@@ -42,11 +42,13 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <td><?= $user['created_at'] ?></td>
             <td>
                 <?php if ($user['role'] === 'user'): ?>
-                    <a href="users.php?id=<?= $user['id'] ?>&change_role=1&role=admin">Admin Yap</a>
+                    <a href="users.php?id=<?= $user['id'] ?>&change_role=1&role=admin">Admin Yap</a> |
+                    <a href="delete_user.php?id=<?= $user['id'] ?>" onclick="return confirm('Bu kullanıcıyı silmek istediğinizden emin misiniz?')">Sil</a>
                 <?php else: ?>
                     <a href="users.php?id=<?= $user['id'] ?>&change_role=1&role=user">User Yap</a>
                 <?php endif; ?>
             </td>
+
         </tr>
     <?php endforeach; ?>
 </table>
