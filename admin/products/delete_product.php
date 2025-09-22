@@ -1,6 +1,6 @@
 <?php
-include_once __DIR__ . '/../includes/functions.php';
-include_once __DIR__ . '/../config/database.php';
+include_once __DIR__ . '/../../includes/functions.php';
+include_once __DIR__ . '/../../config/database.php';
 require_admin();
 
 if (isset($_GET['id'])) {
@@ -14,7 +14,7 @@ if (isset($_GET['id'])) {
     if ($product) {
         // Resmi sil
         if (!empty($product['image'])) {
-            $image_path = __DIR__ . '/../uploads/' . $product['image'];
+            $image_path = __DIR__ . '/../../uploads/' . $product['image'];
             if (file_exists($image_path)) {
                 unlink($image_path);
             }

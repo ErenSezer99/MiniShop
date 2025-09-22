@@ -46,4 +46,4 @@ try {
 
 <p>Soldaki menüden kategori veya ürün yönetimini seçerek devam edebilirsiniz.</p>
 
-<?php include_once __DIR__ . '/footer.php'; ?>
+<?php include_once __DIR__ . '/layout/footer.php'; ?>

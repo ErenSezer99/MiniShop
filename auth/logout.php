@@ -1,4 +1,6 @@
 <?php
+include_once __DIR__ . '/../includes/functions.php';
+
 // Çıkış sayfası
 
 // Tüm session verilerini temizle
@@ -22,5 +24,5 @@ if (ini_get("session.use_cookies")) {
     );
 }
 session_destroy();
-header("Location: index.php");
+redirect("../index.php");
 exit();

@@ -1,8 +1,8 @@
 <?php
 // Giriş sayfası
 
-include_once __DIR__ . "/includes/functions.php";
-include_once __DIR__ . "/config/database.php";
+include_once __DIR__ . "/../includes/functions.php";
+include_once __DIR__ . "/../config/database.php";
 
 $flash = get_flash();
 $message = "";
@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ];
 
                 set_flash("Başarıyla giriş yapıldı.", "success");
-                redirect("index.php");
+                redirect("../index.php");
             } else {
                 $message = "Email veya şifre hatalı.";
             }
@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $csrf_token = generate_csrf_token();
 ?>
-<?php include "includes/header.php"; ?>
+<?php include "../includes/header.php"; ?>
 
 <h2>Giriş Yap</h2>
 
@@ -65,4 +65,4 @@ $csrf_token = generate_csrf_token();
     <input type="submit" value="Giriş Yap">
 </form>
 
-<?php include "includes/footer.php"; ?>
+<?php include "../includes/footer.php"; ?>

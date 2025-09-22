@@ -1,6 +1,6 @@
 <?php
-include_once __DIR__ . '/../includes/functions.php';
-include_once __DIR__ . '/../config/database.php';
+include_once __DIR__ . '/../../includes/functions.php';
+include_once __DIR__ . '/../../config/database.php';
 require_admin();
 
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {

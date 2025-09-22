@@ -1,7 +1,7 @@
 <?php
-include_once __DIR__ . '/../includes/functions.php';
-include_once __DIR__ . '/../config/database.php';
-include_once __DIR__ . '/header.php';
+include_once __DIR__ . '/../../includes/functions.php';
+include_once __DIR__ . '/../../config/database.php';
+include_once __DIR__ . '/../layout/header.php';
 require_admin();
 
 // Ürün ekleme işlemi
@@ -17,7 +17,7 @@ if (isset($_POST['add_product'])) {
     if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
         $ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
         $image = uniqid() . '.' . $ext;
-        move_uploaded_file($_FILES['image']['tmp_name'], __DIR__ . '/../uploads/' . $image);
+        move_uploaded_file($_FILES['image']['tmp_name'], __DIR__ . '/../../uploads/' . $image);
     }
 
     // Veritabanına ekle
@@ -116,7 +116,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <td><?= htmlspecialchars($product['category_name']) ?></td>
             <td>
                 <?php if ($product['image']): ?>
-                    <img src="../uploads/<?= $product['image'] ?>" alt="<?= htmlspecialchars($product['name']) ?>" width="50">
+                    <img src="../../uploads/<?= $product['image'] ?>" alt="<?= htmlspecialchars($product['name']) ?>" width="50">
                 <?php endif; ?>
             </td>
             <td>
@@ -140,5 +140,5 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </div>
 
 <?php
-include_once __DIR__ . '/footer.php';
+include_once __DIR__ . '/../layout/footer.php';
 ?>

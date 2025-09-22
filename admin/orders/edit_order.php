@@ -1,7 +1,7 @@
 <?php
-include_once __DIR__ . '/../includes/functions.php';
-include_once __DIR__ . '/../config/database.php';
-include_once __DIR__ . '/header.php';
+include_once __DIR__ . '/../../includes/functions.php';
+include_once __DIR__ . '/../../config/database.php';
+include_once __DIR__ . '/../layout/header.php';
 require_admin();
 
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
@@ -70,5 +70,5 @@ if (isset($_POST['update_order'])) {
 </form>
 
 <?php
-include_once __DIR__ . '/footer.php';
+include_once __DIR__ . '/../layout/footer.php';
 ?>

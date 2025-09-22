@@ -1,8 +1,8 @@
 <?php
 
-include_once __DIR__ . '/../includes/functions.php';
-include_once __DIR__ . '/../config/database.php';
-include_once __DIR__ . '/header.php';
+include_once __DIR__ . '/../../includes/functions.php';
+include_once __DIR__ . '/../../config/database.php';
+include_once __DIR__ . '/../layout/header.php';
 require_admin();
 
 // Düzenlenecek kategori bilgisi
@@ -120,4 +120,4 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 </div>
 
-<?php include_once __DIR__ . '/footer.php'; ?>
+<?php include_once __DIR__ . '/../layout/footer.php'; ?>

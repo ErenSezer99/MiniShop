@@ -1,8 +1,8 @@
 <?php
 // Kayıt sayfası
 
-include_once "config/database.php";
-include_once "includes/functions.php";
+include_once "../includes/functions.php";
+include_once "../config/database.php";
 
 $flash = get_flash();
 $message = "";
@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Formu göster
 $csrf_token = generate_csrf_token();
 ?>
-<?php include "includes/header.php"; ?>
+<?php include "../includes/header.php"; ?>
 
 <h2>Kayıt Ol</h2>
 
@@ -81,4 +81,4 @@ $csrf_token = generate_csrf_token();
     <input type="submit" value="Kayıt Ol">
 </form>
 
-<?php include "includes/footer.php"; ?>
+<?php include "../includes/footer.php"; ?>

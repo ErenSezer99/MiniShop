@@ -1,7 +1,7 @@
 <?php
-include_once __DIR__ . '/../includes/functions.php';
-include_once __DIR__ . '/../config/database.php';
-include_once __DIR__ . '/header.php';
+include_once __DIR__ . '/../../includes/functions.php';
+include_once __DIR__ . '/../../config/database.php';
+include_once __DIR__ . '/../layout/header.php';
 require_admin();
 
 if (!isset($_GET['id'])) {
@@ -34,11 +34,11 @@ if (isset($_POST['update_product'])) {
     if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
         $ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
         $image = uniqid() . '.' . $ext;
-        move_uploaded_file($_FILES['image']['tmp_name'], __DIR__ . '/../uploads/' . $image);
+        move_uploaded_file($_FILES['image']['tmp_name'], __DIR__ . '/../../uploads/' . $image);
 
         // Önceki resmi sil
         if (!empty($product['image'])) {
-            $old_image = __DIR__ . '/../uploads/' . $product['image'];
+            $old_image = __DIR__ . '/../../uploads/' . $product['image'];
             if (file_exists($old_image)) unlink($old_image);
         }
     }
@@ -94,10 +94,10 @@ $categories = $catStmt->fetchAll(PDO::FETCH_ASSOC);
     <label>Resim:</label>
     <input type="file" name="image"><br>
     <?php if (!empty($product['image'])): ?>
-        <img src="../uploads/<?= $product['image'] ?>" width="80" alt="Ürün Resmi">
+        <img src="../../uploads/<?= $product['image'] ?>" width="80" alt="Ürün Resmi">
     <?php endif; ?>
 
     <button type="submit" name="update_product">Güncelle</button>
 </form>
 
-<?php include_once __DIR__ . '/footer.php'; ?>
+<?php include_once __DIR__ . '/../layout/footer.php'; ?>

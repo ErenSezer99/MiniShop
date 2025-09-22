@@ -38,7 +38,7 @@ if ($is_current_user) {
     session_unset();
     session_destroy();
     echo "Hesabınız başarıyla silindi. Yönlendiriliyorsunuz...";
-    header("Refresh:1; url=../login.php");
+    header("Refresh:1; url=../auth/login.php");
     exit;
 } else {
     echo "Kullanıcı başarıyla silindi. Yönlendiriliyorsunuz...";
