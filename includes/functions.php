@@ -98,3 +98,31 @@ function redirect($url)
   header("Location: $url");
   exit();
 }
+
+/*
+ * Resim yükleme
+ */
+/**
+ 
+ * Dosya yükleme fonksiyonu
+ * @param string $input_name  HTML input name değeri (örn. 'image')
+ * @param string $upload_dir  Yükleme dizini, default: /uploads/
+ * @return string|null        Yüklenen dosya adı veya null
+ */
+function upload_image($input_name, $upload_dir = __DIR__ . '/../uploads/')
+{
+  if (!isset($_FILES[$input_name]) || $_FILES[$input_name]['error'] !== 0) {
+    return null;
+  }
+
+  $file = $_FILES[$input_name];
+  $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+  $filename = uniqid() . '.' . $ext;
+
+  if (!is_dir($upload_dir)) {
+    mkdir($upload_dir, 0755, true);
+  }
+
+  move_uploaded_file($file['tmp_name'], $upload_dir . $filename);
+  return $filename;
+}

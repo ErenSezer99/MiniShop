@@ -6,19 +6,14 @@ require_admin();
 
 // Ürün ekleme işlemi
 if (isset($_POST['add_product'])) {
-    $name = trim($_POST['name']);
-    $description = trim($_POST['description']);
+    $name = sanitize($_POST['name']);
+    $description = sanitize($_POST['description']);
     $price = $_POST['price'];
     $stock = $_POST['stock'];
     $category_id = $_POST['category_id'];
-    $image = null;
 
     // Resim yükleme
-    if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
-        $ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
-        $image = uniqid() . '.' . $ext;
-        move_uploaded_file($_FILES['image']['tmp_name'], __DIR__ . '/../../uploads/' . $image);
-    }
+    $image = upload_image('image');
 
     // Veritabanına ekle
     $sql_insert = "INSERT INTO products (name, description, price, stock, category_id, image, created_at)

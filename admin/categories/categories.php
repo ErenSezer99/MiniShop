@@ -17,18 +17,23 @@ if (isset($_GET['edit'])) {
 // POST işlemleri: ekleme veya güncelleme
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = sanitize($_POST['name']);
+    $description = sanitize($_POST['description']);
+
+    // Resim yükleme fonksiyonu
+    $image = upload_image('image');
+
     $edit_id = $_POST['edit_id'] ?? null;
 
     if (!empty($name)) {
         if ($edit_id) {
-            $stmt = $pdo->prepare("UPDATE categories SET name = ? WHERE id = ?");
-            $stmt->execute([$name, $edit_id]);
+            $stmt = $pdo->prepare("UPDATE categories SET name = ?, description = ?, image = ? WHERE id = ?");
+            $stmt->execute([$name, $description, $image, $edit_id]);
 
             set_flash("Kategori başarıyla güncellendi.", "success");
             redirect("categories.php");
         } else {
-            $stmt = $pdo->prepare("INSERT INTO categories (name) VALUES (?)");
-            $stmt->execute([$name]);
+            $stmt = $pdo->prepare("INSERT INTO categories (name, description, image) VALUES (?, ?, ?)");
+            $stmt->execute([$name, $description, $image]);
 
             set_flash("Kategori başarıyla eklendi.", "success");
             redirect("categories.php");
@@ -60,7 +65,7 @@ $total_categories = $total_stmt->fetchColumn();
 $total_pages = ceil($total_categories / $limit);
 
 // Mevcut kategorileri çek (limitli)
-$stmt = $pdo->prepare("SELECT * FROM categories ORDER BY created_at DESC LIMIT :limit OFFSET :offset");
+$stmt = $pdo->prepare("SELECT * FROM categories ORDER BY id DESC LIMIT :limit OFFSET :offset");
 $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
 $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
 $stmt->execute();
@@ -79,9 +84,16 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
     ?>
 
     <!-- Kategori ekleme / güncelleme formu -->
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         <label for="name"><?= $edit_category ? 'Kategori Adını Düzenle:' : 'Yeni Kategori:' ?></label>
-        <input type="text" name="name" id="name" required value="<?= $edit_category ? sanitize($edit_category['name']) : '' ?>">
+        <input type="text" name="name" id="name" required value="<?= $edit_category ? sanitize($edit_category['name']) : '' ?>"><br>
+
+        <label for="description">Açıklama:</label>
+        <textarea name="description" id="description"><?= $edit_category ? sanitize($edit_category['description']) : '' ?></textarea><br>
+
+        <label for="image">Resim:</label>
+        <input type="file" name="image" id="image"><br>
+
         <input type="hidden" name="edit_id" value="<?= $edit_category['id'] ?? '' ?>">
         <button type="submit"><?= $edit_category ? 'Güncelle' : 'Ekle' ?></button>
     </form>
@@ -91,14 +103,20 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <tr>
             <th>ID</th>
             <th>Kategori Adı</th>
-            <th>Oluşturulma Tarihi</th>
+            <th>Açıklama</th>
+            <th>Resim</th>
             <th>İşlemler</th>
         </tr>
         <?php foreach ($categories as $cat): ?>
             <tr>
                 <td><?= sanitize($cat['id']); ?></td>
                 <td><?= sanitize($cat['name']); ?></td>
-                <td><?= sanitize($cat['created_at']); ?></td>
+                <td><?= sanitize($cat['description']); ?></td>
+                <td>
+                    <?php if ($cat['image']): ?>
+                        <img src="../../uploads/<?= $cat['image'] ?>" alt="<?= sanitize($cat['name']) ?>" width="50">
+                    <?php endif; ?>
+                </td>
                 <td>
                     <a href="categories.php?edit=<?= urlencode($cat['id']); ?>">Düzenle</a>
                     <a href="categories.php?delete=<?= urlencode($cat['id']); ?>" onclick="return confirm('Bu kategoriyi silmek istediğinize emin misiniz?')">Sil</a>
