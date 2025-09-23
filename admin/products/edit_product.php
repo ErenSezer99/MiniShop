@@ -71,10 +71,10 @@ $categories = $catStmt->fetchAll(PDO::FETCH_ASSOC);
 <h2>Ürün Düzenle</h2>
 <form action="" method="post" enctype="multipart/form-data">
     <label>Ürün Adı:</label>
-    <input type="text" name="name" value="<?= htmlspecialchars($product['name']) ?>" required><br>
+    <input type="text" name="name" value="<?= sanitize($product['name']) ?>" required><br>
 
     <label>Açıklama:</label>
-    <textarea name="description" required><?= htmlspecialchars($product['description']) ?></textarea><br>
+    <textarea name="description" required><?= sanitize($product['description']) ?></textarea><br>
 
     <label>Fiyat:</label>
     <input type="number" step="0.01" name="price" value="<?= $product['price'] ?>" required><br>
@@ -86,7 +86,7 @@ $categories = $catStmt->fetchAll(PDO::FETCH_ASSOC);
     <select name="category_id" required>
         <?php foreach ($categories as $cat): ?>
             <option value="<?= $cat['id'] ?>" <?= $cat['id'] == $product['category_id'] ? 'selected' : '' ?>>
-                <?= htmlspecialchars($cat['name']) ?>
+                <?= sanitize($cat['name']) ?>
             </option>
         <?php endforeach; ?>
     </select><br>

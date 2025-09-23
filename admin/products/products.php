@@ -6,8 +6,8 @@ require_admin();
 
 // Ürün ekleme işlemi
 if (isset($_POST['add_product'])) {
-    $name = $_POST['name'];
-    $description = $_POST['description'];
+    $name = trim($_POST['name']);
+    $description = trim($_POST['description']);
     $price = $_POST['price'];
     $stock = $_POST['stock'];
     $category_id = $_POST['category_id'];
@@ -82,7 +82,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $catStmt = $pdo->query("SELECT id, name FROM categories ORDER BY name ASC");
         $categories = $catStmt->fetchAll(PDO::FETCH_ASSOC);
         foreach ($categories as $cat) {
-            echo "<option value=\"{$cat['id']}\">" . htmlspecialchars($cat['name']) . "</option>";
+            echo "<option value=\"{$cat['id']}\">" . sanitize($cat['name']) . "</option>";
         }
         ?>
     </select><br>
@@ -109,14 +109,14 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <?php foreach ($products as $product): ?>
         <tr>
             <td><?= $product['id'] ?></td>
-            <td><?= htmlspecialchars($product['name']) ?></td>
-            <td><?= htmlspecialchars($product['description']) ?></td>
+            <td><?= sanitize($product['name']) ?></td>
+            <td><?= sanitize($product['description']) ?></td>
             <td><?= $product['price'] ?></td>
             <td><?= $product['stock'] ?></td>
-            <td><?= htmlspecialchars($product['category_name']) ?></td>
+            <td><?= sanitize($product['category_name']) ?></td>
             <td>
                 <?php if ($product['image']): ?>
-                    <img src="../../uploads/<?= $product['image'] ?>" alt="<?= htmlspecialchars($product['name']) ?>" width="50">
+                    <img src="../../uploads/<?= $product['image'] ?>" alt="<?= sanitize($product['name']) ?>" width="50">
                 <?php endif; ?>
             </td>
             <td>

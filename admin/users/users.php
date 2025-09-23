@@ -36,9 +36,9 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <?php foreach ($users as $user): ?>
         <tr>
             <td><?= $user['id'] ?></td>
-            <td><?= htmlspecialchars($user['username']) ?></td>
-            <td><?= htmlspecialchars($user['email']) ?></td>
-            <td><?= htmlspecialchars($user['role']) ?></td>
+            <td><?= sanitize($user['username']) ?></td>
+            <td><?= sanitize($user['email']) ?></td>
+            <td><?= sanitize($user['role']) ?></td>
             <td><?= $user['created_at'] ?></td>
             <td>
                 <?php if ($user['role'] === 'user'): ?>

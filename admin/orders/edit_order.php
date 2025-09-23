@@ -51,7 +51,7 @@ if (isset($_POST['update_order'])) {
 ?>
 
 <h2>Sipariş Düzenle (ID: <?= $order['id'] ?>)</h2>
-<p>Kullanıcı: <?= htmlspecialchars($order['username']) ?></p>
+<p>Kullanıcı: <?= sanitize($order['username']) ?></p>
 <p>Toplam Tutar: <?= number_format($order['total_amount'], 2) ?>₺</p>
 <p>Oluşturulma Tarihi: <?= $order['created_at'] ?></p>
 

@@ -81,7 +81,7 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <!-- Kategori ekleme / güncelleme formu -->
     <form method="post">
         <label for="name"><?= $edit_category ? 'Kategori Adını Düzenle:' : 'Yeni Kategori:' ?></label>
-        <input type="text" name="name" id="name" required value="<?= $edit_category ? htmlspecialchars($edit_category['name']) : '' ?>">
+        <input type="text" name="name" id="name" required value="<?= $edit_category ? sanitize($edit_category['name']) : '' ?>">
         <input type="hidden" name="edit_id" value="<?= $edit_category['id'] ?? '' ?>">
         <button type="submit"><?= $edit_category ? 'Güncelle' : 'Ekle' ?></button>
     </form>
@@ -96,9 +96,9 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </tr>
         <?php foreach ($categories as $cat): ?>
             <tr>
-                <td><?= htmlspecialchars($cat['id']); ?></td>
-                <td><?= htmlspecialchars($cat['name']); ?></td>
-                <td><?= htmlspecialchars($cat['created_at']); ?></td>
+                <td><?= sanitize($cat['id']); ?></td>
+                <td><?= sanitize($cat['name']); ?></td>
+                <td><?= sanitize($cat['created_at']); ?></td>
                 <td>
                     <a href="categories.php?edit=<?= urlencode($cat['id']); ?>">Düzenle</a>
                     <a href="categories.php?delete=<?= urlencode($cat['id']); ?>" onclick="return confirm('Bu kategoriyi silmek istediğinize emin misiniz?')">Sil</a>

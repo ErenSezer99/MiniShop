@@ -48,9 +48,9 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <?php foreach ($orders as $order): ?>
         <tr>
             <td><?= $order['id'] ?></td>
-            <td><?= htmlspecialchars($order['username']) ?></td>
+            <td><?= sanitize($order['username']) ?></td>
             <td><?= number_format($order['total_amount'], 2) ?>₺</td>
-            <td><?= $status_map[$order['status']] ?? htmlspecialchars($order['status']) ?></td>
+            <td><?= $status_map[$order['status']] ?? sanitize($order['status']) ?></td>
             <td><?= $order['created_at'] ?></td>
             <td>
                 <a href="edit_order.php?id=<?= $order['id'] ?>">Düzenle</a>
