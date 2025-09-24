@@ -2,7 +2,7 @@
 
 include_once __DIR__ . '/../../includes/functions.php';
 include_once __DIR__ . '/../../config/database.php';
-include_once __DIR__ . '/../layout/header.php';
+include_once __DIR__ . '/../../includes/header.php';
 require_admin();
 
 // Düzenlenecek kategori bilgisi
@@ -18,8 +18,8 @@ if (isset($_GET['edit'])) {
 
 // POST işlemleri: ekleme veya güncelleme
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = sanitize($_POST['name']);
-    $description = sanitize($_POST['description']);
+    $name = trim($_POST['name']);
+    $description = trim($_POST['description']);
 
     // Resim yükleme fonksiyonu
     $image = upload_image('image');
@@ -142,4 +142,4 @@ while ($row = pg_fetch_assoc($res_categories)) {
     </div>
 </div>
 
-<?php include_once __DIR__ . '/../layout/footer.php'; ?>
+<?php include_once __DIR__ . '/../../includes/footer.php'; ?>

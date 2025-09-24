@@ -1,6 +1,6 @@
 <?php
-include_once __DIR__ . '/../includes/functions.php';
-include_once __DIR__ . '/../config/database.php';
+include_once __DIR__ . '/../../includes/functions.php';
+include_once __DIR__ . '/../../config/database.php';
 require_admin();
 
 if (!isset($_GET['id'])) {
@@ -8,7 +8,7 @@ if (!isset($_GET['id'])) {
     exit;
 }
 
-$user_id = (int) $_GET['id'];
+$user_id = $_GET['id'];
 
 // Kullanıcıyı çek
 pg_prepare($dbconn, "select_user", "SELECT * FROM users WHERE id = $1");
@@ -38,7 +38,7 @@ if ($is_current_user) {
     session_unset();
     session_destroy();
     echo "Hesabınız başarıyla silindi. Yönlendiriliyorsunuz...";
-    header("Refresh:1; url=../auth/login.php");
+    header("Refresh:1; url=../../auth/login.php");
     exit;
 } else {
     echo "Kullanıcı başarıyla silindi. Yönlendiriliyorsunuz...";

@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ];
 
                 set_flash("Başarıyla giriş yapıldı.", "success");
-                redirect("../index.php");
+                redirect('/MiniShop/products/index.php');
                 exit;
             } else {
                 $message = "Email veya şifre hatalı.";

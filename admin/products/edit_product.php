@@ -1,7 +1,7 @@
 <?php
 include_once __DIR__ . '/../../includes/functions.php';
 include_once __DIR__ . '/../../config/database.php';
-include_once __DIR__ . '/../layout/header.php';
+include_once __DIR__ . '/../../includes/header.php';
 require_admin();
 
 if (!isset($_GET['id'])) {
@@ -97,4 +97,4 @@ while ($row = pg_fetch_assoc($res_categories)) {
     <button type="submit" name="update_product">Güncelle</button>
 </form>
 
-<?php include_once __DIR__ . '/../layout/footer.php'; ?>
+<?php include_once __DIR__ . '/../../includes/footer.php'; ?>

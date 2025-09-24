@@ -1,7 +1,7 @@
 <?php
 include_once __DIR__ . '/../../includes/functions.php';
 include_once __DIR__ . '/../../config/database.php';
-include_once __DIR__ . '/../layout/header.php';
+include_once __DIR__ . '/../../includes/header.php';
 require_admin();
 
 // Rol değiştirme işlemi
@@ -57,5 +57,5 @@ while ($row = pg_fetch_assoc($res_users)) {
 </table>
 
 <?php
-include_once __DIR__ . '/../layout/footer.php';
+include_once __DIR__ . '/../../includes/footer.php';
 ?>

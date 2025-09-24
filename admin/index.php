@@ -2,6 +2,7 @@
 // Admin dashboard
 include_once __DIR__ . '/../includes/functions.php';
 include_once __DIR__ . '/../config/database.php';
+include_once __DIR__ . '/../includes/header.php';
 require_admin();
 
 // Basit istatistik sorguları
@@ -59,4 +60,4 @@ if ($res) {
 
 <p>Soldaki menüden kategori veya ürün yönetimini seçerek devam edebilirsiniz.</p>
 
-<?php include_once __DIR__ . '/layout/footer.php'; ?>
+<?php include_once __DIR__ . '/../includes/footer.php'; ?>
