@@ -8,10 +8,12 @@ require_admin();
 // Düzenlenecek kategori bilgisi
 $edit_category = null;
 if (isset($_GET['edit'])) {
-    $edit_id = $_GET['edit'];
-    $stmt = $pdo->prepare("SELECT * FROM categories WHERE id = ?");
-    $stmt->execute([$edit_id]);
-    $edit_category = $stmt->fetch(PDO::FETCH_ASSOC);
+    $edit_id = intval($_GET['edit']);
+
+    // Güvenli prepared statement
+    $result = pg_prepare($dbconn, "select_category", "SELECT * FROM categories WHERE id = $1");
+    $res = pg_execute($dbconn, "select_category", [$edit_id]);
+    $edit_category = pg_fetch_assoc($res);
 }
 
 // POST işlemleri: ekleme veya güncelleme
@@ -22,18 +24,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Resim yükleme fonksiyonu
     $image = upload_image('image');
 
-    $edit_id = $_POST['edit_id'] ?? null;
+    $edit_id = isset($_POST['edit_id']) ? intval($_POST['edit_id']) : null;
 
     if (!empty($name)) {
         if ($edit_id) {
-            $stmt = $pdo->prepare("UPDATE categories SET name = ?, description = ?, image = ? WHERE id = ?");
-            $stmt->execute([$name, $description, $image, $edit_id]);
+            pg_prepare($dbconn, "update_category", "UPDATE categories SET name=$1, description=$2, image=$3 WHERE id=$4");
+            pg_execute($dbconn, "update_category", [$name, $description, $image, $edit_id]);
 
             set_flash("Kategori başarıyla güncellendi.", "success");
             redirect("categories.php");
         } else {
-            $stmt = $pdo->prepare("INSERT INTO categories (name, description, image) VALUES (?, ?, ?)");
-            $stmt->execute([$name, $description, $image]);
+            pg_prepare($dbconn, "insert_category", "INSERT INTO categories (name, description, image) VALUES ($1, $2, $3)");
+            pg_execute($dbconn, "insert_category", [$name, $description, $image]);
 
             set_flash("Kategori başarıyla eklendi.", "success");
             redirect("categories.php");
@@ -46,9 +48,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Kategori silme işlemi
 if (isset($_GET['delete'])) {
-    $delete_id = $_GET['delete'];
-    $stmt = $pdo->prepare("DELETE FROM categories WHERE id = ?");
-    $stmt->execute([$delete_id]);
+    $delete_id = intval($_GET['delete']);
+    pg_prepare($dbconn, "delete_category", "DELETE FROM categories WHERE id=$1");
+    pg_execute($dbconn, "delete_category", [$delete_id]);
 
     set_flash("Kategori başarıyla silindi.", "success");
     redirect("categories.php");
@@ -60,16 +62,18 @@ $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int) $_GET['page'] 
 $offset = ($page - 1) * $limit;
 
 // Toplam kategori sayısı
-$total_stmt = $pdo->query("SELECT COUNT(*) FROM categories");
-$total_categories = $total_stmt->fetchColumn();
+$res_total = pg_query($dbconn, "SELECT COUNT(*) FROM categories");
+$total_categories = pg_fetch_result($res_total, 0, 0);
 $total_pages = ceil($total_categories / $limit);
 
 // Mevcut kategorileri çek (limitli)
-$stmt = $pdo->prepare("SELECT * FROM categories ORDER BY id DESC LIMIT :limit OFFSET :offset");
-$stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-$stmt->execute();
-$categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+pg_prepare($dbconn, "select_categories", "SELECT * FROM categories ORDER BY id DESC LIMIT $1 OFFSET $2");
+$res_categories = pg_execute($dbconn, "select_categories", [$limit, $offset]);
+
+$categories = [];
+while ($row = pg_fetch_assoc($res_categories)) {
+    $categories[] = $row;
+}
 
 ?>
 

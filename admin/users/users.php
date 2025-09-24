@@ -8,8 +8,9 @@ require_admin();
 if (isset($_GET['change_role']) && isset($_GET['id'])) {
     $user_id = $_GET['id'];
     $new_role = $_GET['role'] === 'admin' ? 'admin' : 'user';
-    $stmt_role = $pdo->prepare("UPDATE users SET role = :role WHERE id = :id");
-    $stmt_role->execute([':role' => $new_role, ':id' => $user_id]);
+
+    pg_prepare($dbconn, "update_user_role", "UPDATE users SET role = $1 WHERE id = $2");
+    pg_execute($dbconn, "update_user_role", [$new_role, $user_id]);
 
     set_flash('Kullanıcı rolü başarıyla güncellendi!');
     redirect('users.php');
@@ -17,10 +18,13 @@ if (isset($_GET['change_role']) && isset($_GET['id'])) {
 }
 
 // Kullanıcıları çek
-$sql = "SELECT id, username, email, role, created_at FROM users ORDER BY id DESC";
-$stmt = $pdo->prepare($sql);
-$stmt->execute();
-$users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+pg_prepare($dbconn, "select_users", "SELECT id, username, email, role, created_at FROM users ORDER BY id DESC");
+$res_users = pg_execute($dbconn, "select_users", []);
+
+$users = [];
+while ($row = pg_fetch_assoc($res_users)) {
+    $users[] = $row;
+}
 ?>
 
 <h2>Kullanıcılar</h2>
@@ -48,7 +52,6 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <a href="users.php?id=<?= $user['id'] ?>&change_role=1&role=user">User Yap</a>
                 <?php endif; ?>
             </td>
-
         </tr>
     <?php endforeach; ?>
 </table>

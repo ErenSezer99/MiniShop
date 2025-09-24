@@ -1,15 +1,15 @@
 <?php
 // Veritabanı bağlantısı ayarları
 $host = "localhost";
+$port = "5432";
 $dbname = "minishop";
-$username = "root";
-$password = "";
+$username = "postgres";
+$password = "Eren123";
 
-try {
-  // PDO ile veritabanına bağlanma
-  $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
-  // PDO hata modunu exception olarak ayarlama
-  $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-  die("Veritabanı bağlantı hatası: " . $e->getMessage());
+// pg_connect ile bağlantı
+$conn_string = "host=$host port=$port dbname=$dbname user=$username password=$password";
+$dbconn = pg_connect($conn_string);
+
+if (!$dbconn) {
+  die("Veritabanı bağlantı hatası: " . pg_last_error());
 }

@@ -16,44 +16,49 @@ if (isset($_POST['add_product'])) {
     $image = upload_image('image');
 
     // Veritabanına ekle
-    $sql_insert = "INSERT INTO products (name, description, price, stock, category_id, image, created_at)
-                   VALUES (:name, :description, :price, :stock, :category_id, :image, NOW())";
-    $stmt_insert = $pdo->prepare($sql_insert);
-    $stmt_insert->execute([
-        ':name' => $name,
-        ':description' => $description,
-        ':price' => $price,
-        ':stock' => $stock,
-        ':category_id' => $category_id,
-        ':image' => $image
-    ]);
+    pg_prepare($dbconn, "insert_product", "
+        INSERT INTO products (name, description, price, stock, category_id, image, created_at)
+        VALUES ($1, $2, $3, $4, $5, $6, NOW())
+    ");
+    pg_execute($dbconn, "insert_product", [$name, $description, $price, $stock, $category_id, $image]);
 
     set_flash('Ürün başarıyla eklendi!');
     redirect('products.php');
     exit;
 }
 
-// --- Pagination ayarları ---
+// --- Sayfalama ayarları ---
 $limit = 5;
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int) $_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
 // Toplam ürün sayısı
-$total_stmt = $pdo->query("SELECT COUNT(*) FROM products");
-$total_products = $total_stmt->fetchColumn();
+$res_total = pg_query($dbconn, "SELECT COUNT(*) FROM products");
+$total_products = pg_fetch_result($res_total, 0, 0);
 $total_pages = ceil($total_products / $limit);
 
 // Ürünleri çekme sorgusu (limitli)
-$sql = "SELECT p.id, p.name, p.description, p.price, p.stock, p.image, c.name AS category_name
-        FROM products p
-        LEFT JOIN categories c ON p.category_id = c.id
-        ORDER BY p.id DESC
-        LIMIT :limit OFFSET :offset";
-$stmt = $pdo->prepare($sql);
-$stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-$stmt->execute();
-$products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+pg_prepare($dbconn, "select_products", "
+    SELECT p.id, p.name, p.description, p.price, p.stock, p.image, c.name AS category_name
+    FROM products p
+    LEFT JOIN categories c ON p.category_id = c.id
+    ORDER BY p.id DESC
+    LIMIT $1 OFFSET $2
+");
+$res_products = pg_execute($dbconn, "select_products", [$limit, $offset]);
+
+$products = [];
+while ($row = pg_fetch_assoc($res_products)) {
+    $products[] = $row;
+}
+
+// Kategorileri çek
+pg_prepare($dbconn, "select_categories", "SELECT id, name FROM categories ORDER BY name ASC");
+$res_categories = pg_execute($dbconn, "select_categories", []);
+$categories = [];
+while ($row = pg_fetch_assoc($res_categories)) {
+    $categories[] = $row;
+}
 ?>
 
 <!-- Ürün Ekleme Formu -->
@@ -73,13 +78,9 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <label>Kategori:</label>
     <select name="category_id" required>
-        <?php
-        $catStmt = $pdo->query("SELECT id, name FROM categories ORDER BY name ASC");
-        $categories = $catStmt->fetchAll(PDO::FETCH_ASSOC);
-        foreach ($categories as $cat) {
-            echo "<option value=\"{$cat['id']}\">" . sanitize($cat['name']) . "</option>";
-        }
-        ?>
+        <?php foreach ($categories as $cat): ?>
+            <option value="<?= $cat['id'] ?>"><?= sanitize($cat['name']) ?></option>
+        <?php endforeach; ?>
     </select><br>
 
     <label>Resim:</label>

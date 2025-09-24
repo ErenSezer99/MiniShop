@@ -12,9 +12,9 @@ if (!isset($_GET['id'])) {
 $product_id = (int)$_GET['id'];
 
 // Ürünü çek
-$stmt = $pdo->prepare("SELECT * FROM products WHERE id = :id");
-$stmt->execute([':id' => $product_id]);
-$product = $stmt->fetch(PDO::FETCH_ASSOC);
+pg_prepare($dbconn, "select_product", "SELECT * FROM products WHERE id = $1");
+$res = pg_execute($dbconn, "select_product", [$product_id]);
+$product = pg_fetch_assoc($res);
 
 if (!$product) {
     set_flash('Ürün bulunamadı!', 'error');
@@ -43,20 +43,13 @@ if (isset($_POST['update_product'])) {
         }
     }
 
-    $sql_update = "UPDATE products 
-                   SET name = :name, description = :description, price = :price, 
-                       stock = :stock, category_id = :category_id, image = :image
-                   WHERE id = :id";
-    $stmt_update = $pdo->prepare($sql_update);
-    $stmt_update->execute([
-        ':name' => $name,
-        ':description' => $description,
-        ':price' => $price,
-        ':stock' => $stock,
-        ':category_id' => $category_id,
-        ':image' => $image,
-        ':id' => $product_id
-    ]);
+    // Ürün güncelleme
+    pg_prepare($dbconn, "update_product", "
+        UPDATE products
+        SET name=$1, description=$2, price=$3, stock=$4, category_id=$5, image=$6
+        WHERE id=$7
+    ");
+    pg_execute($dbconn, "update_product", [$name, $description, $price, $stock, $category_id, $image, $product_id]);
 
     set_flash('Ürün başarıyla güncellendi!');
     redirect('products.php');
@@ -64,8 +57,12 @@ if (isset($_POST['update_product'])) {
 }
 
 // Kategorileri çek
-$catStmt = $pdo->query("SELECT id, name FROM categories ORDER BY name ASC");
-$categories = $catStmt->fetchAll(PDO::FETCH_ASSOC);
+pg_prepare($dbconn, "select_categories", "SELECT id, name FROM categories ORDER BY name ASC");
+$res_categories = pg_execute($dbconn, "select_categories", []);
+$categories = [];
+while ($row = pg_fetch_assoc($res_categories)) {
+    $categories[] = $row;
+}
 ?>
 
 <h2>Ürün Düzenle</h2>

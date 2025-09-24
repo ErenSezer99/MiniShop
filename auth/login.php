@@ -19,9 +19,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $message = "Lütfen e-posta ve şifre girin.";
         } else {
             // Kullanıcıyı al
-            $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
-            $stmt->execute([$email]);
-            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            pg_prepare($dbconn, "get_user_by_email", "SELECT * FROM users WHERE email = $1");
+            $res = pg_execute($dbconn, "get_user_by_email", [$email]);
+            $user = pg_fetch_assoc($res);
 
             if ($user && password_verify($password, $user['password'])) {
                 // Giriş başarılı
@@ -33,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 set_flash("Başarıyla giriş yapıldı.", "success");
                 redirect("../index.php");
+                exit;
             } else {
                 $message = "Email veya şifre hatalı.";
             }

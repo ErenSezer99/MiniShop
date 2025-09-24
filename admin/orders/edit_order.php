@@ -21,12 +21,12 @@ $status_map = [
 ];
 
 // Siparişi çek
-$stmt = $pdo->prepare("SELECT o.id, o.user_id, o.total_amount, o.status, o.created_at, u.username
-                       FROM orders o
-                       LEFT JOIN users u ON o.user_id = u.id
-                       WHERE o.id = :id");
-$stmt->execute([':id' => $order_id]);
-$order = $stmt->fetch(PDO::FETCH_ASSOC);
+pg_prepare($dbconn, "select_order", "SELECT o.id, o.user_id, o.total_amount, o.status, o.created_at, u.username
+                                   FROM orders o
+                                   LEFT JOIN users u ON o.user_id = u.id
+                                   WHERE o.id = $1");
+$res = pg_execute($dbconn, "select_order", [$order_id]);
+$order = pg_fetch_assoc($res);
 
 if (!$order) {
     set_flash('Sipariş bulunamadı.');
@@ -38,11 +38,8 @@ if (!$order) {
 if (isset($_POST['update_order'])) {
     $status = $_POST['status'];
 
-    $update_stmt = $pdo->prepare("UPDATE orders SET status = :status WHERE id = :id");
-    $update_stmt->execute([
-        ':status' => $status,
-        ':id' => $order_id
-    ]);
+    pg_prepare($dbconn, "update_order", "UPDATE orders SET status = $1 WHERE id = $2");
+    pg_execute($dbconn, "update_order", [$status, $order_id]);
 
     set_flash('Sipariş durumu güncellendi.');
     redirect('orders.php');

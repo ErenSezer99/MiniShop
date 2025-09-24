@@ -12,27 +12,30 @@ $status_map = [
     'cancelled'  => 'İptal'
 ];
 
-// --- Pagination ayarları ---
+// --- Sayfalama ayarları ---
 $limit = 10;
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int) $_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
 // Toplam sipariş sayısı
-$total_stmt = $pdo->query("SELECT COUNT(*) FROM orders");
-$total_orders = $total_stmt->fetchColumn();
+$res_total = pg_query($dbconn, "SELECT COUNT(*) FROM orders");
+$total_orders = pg_fetch_result($res_total, 0, 0);
 $total_pages = ceil($total_orders / $limit);
 
 // Siparişleri çekme sorgusu (limitli)
-$sql = "SELECT o.id, o.user_id, o.total_amount, o.status, o.created_at, u.username
-        FROM orders o
-        LEFT JOIN users u ON o.user_id = u.id
-        ORDER BY o.id DESC
-        LIMIT :limit OFFSET :offset";
-$stmt = $pdo->prepare($sql);
-$stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-$stmt->execute();
-$orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+pg_prepare($dbconn, "select_orders", "
+    SELECT o.id, o.user_id, o.total_amount, o.status, o.created_at, u.username
+    FROM orders o
+    LEFT JOIN users u ON o.user_id = u.id
+    ORDER BY o.id DESC
+    LIMIT $1 OFFSET $2
+");
+$res_orders = pg_execute($dbconn, "select_orders", [$limit, $offset]);
+
+$orders = [];
+while ($row = pg_fetch_assoc($res_orders)) {
+    $orders[] = $row;
+}
 ?>
 
 <h2>Siparişler</h2>

@@ -8,12 +8,12 @@ if (!isset($_GET['id'])) {
     exit;
 }
 
-$user_id = $_GET['id'];
+$user_id = (int) $_GET['id'];
 
 // Kullanıcıyı çek
-$stmt = $pdo->prepare("SELECT * FROM users WHERE id = :id");
-$stmt->execute([':id' => $user_id]);
-$user = $stmt->fetch(PDO::FETCH_ASSOC);
+pg_prepare($dbconn, "select_user", "SELECT * FROM users WHERE id = $1");
+$res_user = pg_execute($dbconn, "select_user", [$user_id]);
+$user = pg_fetch_assoc($res_user);
 
 if (!$user) {
     echo "Kullanıcı bulunamadı.";
@@ -30,8 +30,8 @@ if ($user['role'] === 'admin') {
 $is_current_user = ($user['id'] === ($_SESSION['user']['id'] ?? ''));
 
 // Kullanıcıyı sil
-$stmt_delete = $pdo->prepare("DELETE FROM users WHERE id = :id");
-$stmt_delete->execute([':id' => $user_id]);
+pg_prepare($dbconn, "delete_user", "DELETE FROM users WHERE id = $1");
+pg_execute($dbconn, "delete_user", [$user_id]);
 
 if ($is_current_user) {
     // Oturumu temizle ve login sayfasına yönlendir

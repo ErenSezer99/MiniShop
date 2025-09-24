@@ -4,22 +4,35 @@ include_once __DIR__ . '/../includes/functions.php';
 include_once __DIR__ . '/../config/database.php';
 require_admin();
 
+// Basit istatistik sorguları
+$products_count = $categories_count = $orders_count = $users_count = "-";
 
-// Basit istatistik sorguları (try/catch ile hata güvenliği)
-try {
-    $stmt = $pdo->query("SELECT COUNT(*) FROM products");
-    $products_count = (int)$stmt->fetchColumn();
+// Products sayısı
+$res = pg_query($dbconn, "SELECT COUNT(*) AS count FROM products");
+if ($res) {
+    $row = pg_fetch_assoc($res);
+    $products_count = (int)$row['count'];
+}
 
-    $stmt = $pdo->query("SELECT COUNT(*) FROM categories");
-    $categories_count = (int)$stmt->fetchColumn();
+// Categories sayısı
+$res = pg_query($dbconn, "SELECT COUNT(*) AS count FROM categories");
+if ($res) {
+    $row = pg_fetch_assoc($res);
+    $categories_count = (int)$row['count'];
+}
 
-    $stmt = $pdo->query("SELECT COUNT(*) FROM orders");
-    $orders_count = (int)$stmt->fetchColumn();
+// Orders sayısı
+$res = pg_query($dbconn, "SELECT COUNT(*) AS count FROM orders");
+if ($res) {
+    $row = pg_fetch_assoc($res);
+    $orders_count = (int)$row['count'];
+}
 
-    $stmt = $pdo->query("SELECT COUNT(*) FROM users");
-    $users_count = (int)$stmt->fetchColumn();
-} catch (PDOException $e) {
-    $products_count = $categories_count = $orders_count = $users_count = "-";
+// Users sayısı
+$res = pg_query($dbconn, "SELECT COUNT(*) AS count FROM users");
+if ($res) {
+    $row = pg_fetch_assoc($res);
+    $users_count = (int)$row['count'];
 }
 ?>
 

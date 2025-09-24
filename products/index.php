@@ -9,21 +9,26 @@ $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int) $_GET['page'] 
 $offset = ($page - 1) * $limit;
 
 // Toplam ürün sayısı
-$total_stmt = $pdo->query("SELECT COUNT(*) FROM products");
-$total_products = $total_stmt->fetchColumn();
+pg_prepare($dbconn, "count_products", "SELECT COUNT(*) AS total FROM products");
+$res_total = pg_execute($dbconn, "count_products", []);
+$row_total = pg_fetch_assoc($res_total);
+$total_products = (int)$row_total['total'];
 $total_pages = ceil($total_products / $limit);
 
 // Ürünleri çek
-$sql = "SELECT p.id, p.name, p.description, p.price, p.image, c.name AS category_name
-        FROM products p
-        LEFT JOIN categories c ON p.category_id = c.id
-        ORDER BY p.id DESC
-        LIMIT :limit OFFSET :offset";
-$stmt = $pdo->prepare($sql);
-$stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-$stmt->execute();
-$products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+pg_prepare($dbconn, "select_products", "
+    SELECT p.id, p.name, p.description, p.price, p.image, c.name AS category_name
+    FROM products p
+    LEFT JOIN categories c ON p.category_id = c.id
+    ORDER BY p.id DESC
+    LIMIT $1 OFFSET $2
+");
+$res_products = pg_execute($dbconn, "select_products", [$limit, $offset]);
+
+$products = [];
+while ($row = pg_fetch_assoc($res_products)) {
+    $products[] = $row;
+}
 ?>
 
 <h2>Ürünler</h2>
@@ -86,7 +91,6 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     <?php endforeach; ?>
 </div>
-
 
 <!-- Sayfalama -->
 <div style="margin-top:20px; text-align:center;">

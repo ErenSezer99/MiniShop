@@ -12,8 +12,8 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 $order_id = (int) $_GET['id'];
 
 // Siparişi sil
-$stmt = $pdo->prepare("DELETE FROM orders WHERE id = :id");
-$stmt->execute([':id' => $order_id]);
+pg_prepare($dbconn, "delete_order", "DELETE FROM orders WHERE id = $1");
+pg_execute($dbconn, "delete_order", [$order_id]);
 
 set_flash('Sipariş başarıyla silindi.');
 redirect('orders.php');

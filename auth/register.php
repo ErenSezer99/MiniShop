@@ -29,19 +29,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $message = "Şifre en az 6 karakter olmalı.";
         } else {
             // Email daha önce kayıtlı mı kontrol et
-            $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ?");
-            $stmt->execute([$email]);
-            if ($stmt->fetch()) {
+            pg_prepare($dbconn, "check_email", "SELECT id FROM users WHERE email = $1");
+            $res_check = pg_execute($dbconn, "check_email", [$email]);
+
+            if (pg_fetch_assoc($res_check)) {
                 $message = "Bu e-posta zaten kayıtlı.";
             } else {
                 $hashed = password_hash($password, PASSWORD_DEFAULT);
 
-                $insert = $pdo->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
-                try {
-                    $insert->execute([$username, $email, $hashed]);
+                // insert
+                pg_prepare($dbconn, "insert_user", "INSERT INTO users (username, email, password) VALUES ($1, $2, $3)");
+                $res_insert = pg_execute($dbconn, "insert_user", [$username, $email, $hashed]);
+
+                if ($res_insert) {
                     set_flash("Kayıt başarılı! Giriş yapabilirsiniz.", "success");
                     redirect("login.php");
-                } catch (PDOException $e) {
+                    exit;
+                } else {
                     $message = "Kayıt sırasında bir hata oluştu.";
                 }
             }

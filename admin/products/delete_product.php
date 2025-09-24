@@ -7,9 +7,9 @@ if (isset($_GET['id'])) {
     $product_id = (int) $_GET['id'];
 
     // Ürünü getir
-    $stmt = $pdo->prepare("SELECT image FROM products WHERE id = :id");
-    $stmt->execute([':id' => $product_id]);
-    $product = $stmt->fetch(PDO::FETCH_ASSOC);
+    pg_prepare($dbconn, "select_product_image", "SELECT image FROM products WHERE id = $1");
+    $res = pg_execute($dbconn, "select_product_image", [$product_id]);
+    $product = pg_fetch_assoc($res);
 
     if ($product) {
         // Resmi sil
@@ -20,8 +20,9 @@ if (isset($_GET['id'])) {
             }
         }
 
-        $stmt_delete = $pdo->prepare("DELETE FROM products WHERE id = :id");
-        $stmt_delete->execute([':id' => $product_id]);
+        // Ürünü sil
+        pg_prepare($dbconn, "delete_product", "DELETE FROM products WHERE id = $1");
+        pg_execute($dbconn, "delete_product", [$product_id]);
     }
 }
 
