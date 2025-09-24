@@ -12,10 +12,20 @@ if (isset($_GET['change_role']) && isset($_GET['id'])) {
     pg_prepare($dbconn, "update_user_role", "UPDATE users SET role = $1 WHERE id = $2");
     pg_execute($dbconn, "update_user_role", [$new_role, $user_id]);
 
+    // Eğer kendi rolünü değiştiriyorsa session'ı temizle ve logout yap
+    if ($user_id == ($_SESSION['user']['id'] ?? 0)) {
+        session_unset();
+        session_destroy();
+        header("Location: /MiniShop/auth/login.php");
+        exit;
+    }
+
+
     set_flash('Kullanıcı rolü başarıyla güncellendi!');
     redirect('users.php');
     exit;
 }
+
 
 // Kullanıcıları çek
 pg_prepare($dbconn, "select_users", "SELECT id, username, email, role, created_at FROM users ORDER BY id DESC");
