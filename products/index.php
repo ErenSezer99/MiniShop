@@ -33,83 +33,40 @@ while ($row = pg_fetch_assoc($res_products)) {
 
 <h2>Ürünler</h2>
 
-<!-- Sepete Git butonu -->
-<div style="text-align:right; margin-bottom:15px;">
-    <a href="/MiniShop/cart/cart.php" style="
-        padding:8px 12px;
-        background:#28a745;
-        color:white;
-        text-decoration:none;
-        border-radius:4px;
-        font-weight:bold;
-    ">
-        Sepete Git 🛒
-    </a>
+<div class="cart-header">
+    <a href="/MiniShop/cart/cart.php" class="btn-cart">Sepete Git 🛒</a>
 </div>
 
-<div style="display:flex; flex-wrap:wrap; gap:20px;">
+<div class="products-grid">
     <?php foreach ($products as $product): ?>
-        <div style="
-            border:1px solid #ccc;
-            padding:15px;
-            width:220px;
-            text-align:center;
-            border-radius:6px;
-            box-shadow: 1px 1px 5px rgba(0,0,0,0.1);
-        ">
+        <div class="product-card">
             <?php if ($product['image']): ?>
-                <img src="/MiniShop/uploads/<?= sanitize($product['image']) ?>"
-                    alt="<?= sanitize($product['name']) ?>"
-                    width="150" style="margin-bottom:10px;">
+                <img src="/MiniShop/uploads/<?= sanitize($product['image']) ?>" alt="<?= sanitize($product['name']) ?>" class="product-img">
             <?php endif; ?>
 
-            <h3 style="margin:5px 0;"><?= sanitize($product['name']) ?></h3>
-            <p style="margin:3px 0; font-weight:bold; color:#007bff;">
-                <?= number_format($product['price'], 2) ?> ₺
-            </p>
-            <p style="margin:2px 0; font-size:0.9em; color:#555;">
-                Kategori: <?= sanitize($product['category_name']) ?>
-            </p>
-            <p style="margin:5px 0; font-size:0.85em; color:#333;">
-                <?= sanitize($product['description']) ?>
-            </p>
+            <h3 class="product-name"><?= sanitize($product['name']) ?></h3>
+            <p class="product-price"><?= number_format($product['price'], 2) ?> ₺</p>
+            <p class="product-category">Kategori: <?= sanitize($product['category_name']) ?></p>
+            <p class="product-desc"><?= sanitize($product['description']) ?></p>
 
-            <!-- Sepete ekleme formu -->
-            <form action="/MiniShop/cart/add_to_cart.php" method="post">
-                <input type="hidden" name="product_id" value="<?= $product['id'] ?>">
-                <input type="number" name="quantity" value="1" min="1" style="width:50px; margin-top:5px;">
-                <button type="submit" style="
-                    margin-top:5px;
-                    padding:5px 10px;
-                    background:#28a745;
-                    color:white;
-                    border:none;
-                    border-radius:4px;
-                    cursor:pointer;
-                ">Sepete Ekle</button>
+            <form class="add-to-cart-form" data-product-id="<?= $product['id'] ?>">
+                <input type="number" name="quantity" value="1" min="1" class="qty-input">
+                <button type="submit" class="btn-add-cart">Sepete Ekle</button>
             </form>
         </div>
     <?php endforeach; ?>
 </div>
 
-<!-- Sayfalama -->
-<div style="margin-top:20px; text-align:center;">
+<div class="pagination">
     <?php if ($total_pages > 1): ?>
         <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-            <a href="index.php?page=<?= $i ?>"
-                style="
-                   margin:0 5px;
-                   padding:5px 10px;
-                   border-radius:4px;
-                   text-decoration:none;
-                   background: <?= ($i == $page) ? '#007bff' : '#f0f0f0' ?>;
-                   color: <?= ($i == $page) ? 'white' : 'black' ?>;
-               ">
-                <?= $i ?>
-            </a>
+            <a href="index.php?page=<?= $i ?>" class="<?= ($i == $page) ? 'active' : '' ?>"><?= $i ?></a>
         <?php endfor; ?>
     <?php endif; ?>
 </div>
+
+<script src="/MiniShop/assets/js/main.js"></script>
+<script src="/MiniShop/assets/js/cart.js"></script>
 
 <?php
 include_once __DIR__ . '/../includes/footer.php';

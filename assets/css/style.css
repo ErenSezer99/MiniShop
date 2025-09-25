@@ -1,45 +1,140 @@
 header.admin-nav {
-            background: #f4f4f4;
-            padding: 10px;
-            margin-bottom: 10px;
-        }
+    background: #f4f4f4;
+    padding: 10px;
+    margin-bottom: 10px;
+}
 
-        header.admin-nav a {
-            margin-right: 10px;
-        }
+header.admin-nav a {
+    margin-right: 10px;
+}
 
-        .flash {
-            padding: 8px;
-            margin: 10px 0;
-            border-radius: 4px;
-            opacity: 1;
-            transition: opacity 0.5s ease; 
-        }
+.flash {
+    padding: 8px;
+    margin: 10px 0;
+    border-radius: 4px;
+    opacity: 1;
+    transition: opacity 0.5s ease, margin 0.5s ease;
+    text-align: center;
+}
 
-        .flash.success {
-            background: #e6ffea;
-            border: 1px solid #b6f0c2;
-            color: #155724;
-        }
+.flash.success {
+    background: #e6ffea;
+    border: 1px solid #b6f0c2;
+    color: #155724;
+}
 
-        .flash.error {
-            background: #ffe6e6;
-            border: 1px solid #f0b6b6;
-            color: #721c24;
-        }
+.flash.error {
+    background: #ffe6e6;
+    border: 1px solid #f0b6b6;
+    color: #721c24;
+}
 
-        .admin-stats {
-            display: flex;
-            gap: 16px;
-            margin: 16px 0;
-        }
+.admin-stats {
+    display: flex;
+    gap: 16px;
+    margin: 16px 0;
+}
 
-        .admin-stat {
-            padding: 12px;
-            border-radius: 6px;
-            background: #fff;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, .05);
-        }
+.admin-stat {
+    padding: 12px;
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .05);
+}
+
+/* Sepete Git butonu */
+.cart-header {
+    text-align: right;
+    margin-bottom: 15px;
+}
+
+.btn-cart {
+    padding: 8px 12px;
+    background: #28a745;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+/* Ürün kartları */
+.products-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.product-card {
+    border: 1px solid #ccc;
+    padding: 15px;
+    width: 220px;
+    text-align: center;
+    border-radius: 6px;
+    box-shadow: 1px 1px 5px rgba(0,0,0,0.1);
+}
+
+.product-img {
+    width: 150px;
+    margin-bottom: 10px;
+}
+
+.product-name {
+    margin: 5px 0;
+}
+
+.product-price {
+    margin: 3px 0;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.product-category {
+    margin: 2px 0;
+    font-size: 0.9em;
+    color: #555;
+}
+
+.product-desc {
+    margin: 5px 0;
+    font-size: 0.85em;
+    color: #333;
+}
+
+.qty-input {
+    width: 50px;
+    margin-top: 5px;
+}
+
+.btn-add-cart {
+    margin-top: 5px;
+    padding: 5px 10px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Pagination */
+.pagination {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.pagination a {
+    margin: 0 5px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    text-decoration: none;
+    background: #f0f0f0;
+    color: black;
+}
+
+.pagination a.active {
+    background: #007bff;
+    color: white;
+}
+
 
 footer {
     margin-top: 20px;
@@ -47,3 +142,4 @@ footer {
     text-align: center;
     color: #666;
 }
+
