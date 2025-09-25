@@ -20,12 +20,10 @@ if (isset($_GET['change_role']) && isset($_GET['id'])) {
         exit;
     }
 
-
     set_flash('Kullanıcı rolü başarıyla güncellendi!');
     redirect('users.php');
     exit;
 }
-
 
 // Kullanıcıları çek
 pg_prepare($dbconn, "select_users", "SELECT id, username, email, role, created_at FROM users ORDER BY id DESC");
@@ -33,6 +31,8 @@ $res_users = pg_execute($dbconn, "select_users", []);
 
 $users = [];
 while ($row = pg_fetch_assoc($res_users)) {
+    // Tarihi okunabilir formata çevir
+    $row['formatted_date'] = date('d-m-Y H:i', strtotime($row['created_at']));
     $users[] = $row;
 }
 ?>
@@ -53,7 +53,7 @@ while ($row = pg_fetch_assoc($res_users)) {
             <td><?= sanitize($user['username']) ?></td>
             <td><?= sanitize($user['email']) ?></td>
             <td><?= sanitize($user['role']) ?></td>
-            <td><?= $user['created_at'] ?></td>
+            <td><?= $user['formatted_date'] ?></td>
             <td>
                 <?php if ($user['role'] === 'user'): ?>
                     <a href="users.php?id=<?= $user['id'] ?>&change_role=1&role=admin">Admin Yap</a> |

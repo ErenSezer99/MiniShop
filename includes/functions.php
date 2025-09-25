@@ -126,3 +126,80 @@ function upload_image($input_name, $upload_dir = __DIR__ . '/../uploads/')
   move_uploaded_file($file['tmp_name'], $upload_dir . $filename);
   return $filename;
 }
+
+/**
+ * Sipariş oluşturma fonksiyonu
+ * @param int|null $user_id  Üye ID, misafir için null
+ * @param array $cart_items  Sepet öğeleri, her öğe ['id','quantity','price']
+ * @param float $total_amount
+ * @return int|false  Oluşan sipariş ID veya false
+ */
+function create_order($user_id, $cart_items, $total_amount, $guest_name = null, $guest_email = null, $guest_address = null)
+{
+  global $dbconn;
+
+  // Eğer üye kullanıcı ve guest_name/email boş ise users tablosundan al
+  if ($user_id !== null) {
+    pg_prepare($dbconn, "get_user_info", "SELECT username, email FROM users WHERE id=$1");
+    $res_user = pg_execute($dbconn, "get_user_info", [$user_id]);
+    if ($res_user && $row = pg_fetch_assoc($res_user)) {
+      if (!$guest_name) $guest_name = $row['username'];
+      if (!$guest_email) $guest_email = $row['email'];
+    }
+  }
+
+  // Begin transaction
+  pg_query($dbconn, "BEGIN");
+
+  // orders tablosuna ekle
+  pg_prepare($dbconn, "insert_order", "
+        INSERT INTO orders (user_id, total_amount, guest_name, guest_email, guest_address)
+        VALUES ($1, $2, $3, $4, $5) RETURNING id
+    ");
+  $res = pg_execute($dbconn, "insert_order", [
+    $user_id,
+    $total_amount,
+    $guest_name,
+    $guest_email,
+    $guest_address
+  ]);
+
+  if (!$res) {
+    pg_query($dbconn, "ROLLBACK");
+    return false;
+  }
+
+  $order = pg_fetch_assoc($res);
+  $order_id = $order['id'];
+
+  // order_items ekle
+  pg_prepare($dbconn, "insert_order_item", "
+        INSERT INTO order_items (order_id, product_id, quantity, price) VALUES ($1, $2, $3, $4)
+    ");
+  foreach ($cart_items as $item) {
+    $res_item = pg_execute($dbconn, "insert_order_item", [
+      $order_id,
+      $item['id'] ?? $item['product_id'],
+      $item['quantity'],
+      $item['price']
+    ]);
+    if (!$res_item) {
+      pg_query($dbconn, "ROLLBACK");
+      return false;
+    }
+  }
+
+  pg_query($dbconn, "COMMIT");
+  return $order_id;
+}
+
+
+/**
+ * Sipariş email simülasyonu
+ * Burada gerçek email yerine flash mesaj veya log 
+ */
+function send_order_email($order_id)
+{
+  // Örnek flash ile simülasyon
+  set_flash("Siparişiniz (#$order_id) başarıyla alındı! Email gönderildi.", "success");
+}

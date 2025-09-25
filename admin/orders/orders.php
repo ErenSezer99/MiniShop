@@ -24,7 +24,8 @@ $total_pages = ceil($total_orders / $limit);
 
 // Siparişleri çekme sorgusu (limitli)
 pg_prepare($dbconn, "select_orders", "
-    SELECT o.id, o.user_id, o.total_amount, o.status, o.created_at, u.username
+    SELECT o.id, o.user_id, o.total_amount, o.status, o.created_at, 
+           u.username, o.guest_name, o.guest_email, o.guest_address
     FROM orders o
     LEFT JOIN users u ON o.user_id = u.id
     ORDER BY o.id DESC
@@ -34,6 +35,8 @@ $res_orders = pg_execute($dbconn, "select_orders", [$limit, $offset]);
 
 $orders = [];
 while ($row = pg_fetch_assoc($res_orders)) {
+    // Tarihi okunabilir formata çevir
+    $row['formatted_date'] = date('d-m-Y H:i', strtotime($row['created_at']));
     $orders[] = $row;
 }
 ?>
@@ -42,7 +45,9 @@ while ($row = pg_fetch_assoc($res_orders)) {
 <table border="1" cellpadding="10" cellspacing="0">
     <tr>
         <th>ID</th>
-        <th>Kullanıcı</th>
+        <th>Kullanıcı / Misafir</th>
+        <th>Email</th>
+        <th>Adres</th>
         <th>Toplam Tutar</th>
         <th>Durum</th>
         <th>Oluşturulma Tarihi</th>
@@ -51,10 +56,20 @@ while ($row = pg_fetch_assoc($res_orders)) {
     <?php foreach ($orders as $order): ?>
         <tr>
             <td><?= $order['id'] ?></td>
-            <td><?= sanitize($order['username']) ?></td>
+            <td>
+                <?php
+                if ($order['user_id']) {
+                    echo sanitize($order['username']);
+                } else {
+                    echo 'Misafir#' . $order['id'] . ' (' . sanitize($order['guest_name']) . ')';
+                }
+                ?>
+            </td>
+            <td><?= sanitize($order['guest_email']) ?></td>
+            <td><?= sanitize($order['guest_address']) ?></td>
             <td><?= number_format($order['total_amount'], 2) ?>₺</td>
             <td><?= $status_map[$order['status']] ?? sanitize($order['status']) ?></td>
-            <td><?= $order['created_at'] ?></td>
+            <td><?= $order['formatted_date'] ?></td>
             <td>
                 <a href="edit_order.php?id=<?= $order['id'] ?>">Düzenle</a>
                 <a href="delete_order.php?id=<?= $order['id'] ?>" onclick="return confirm('Silmek istediğinizden emin misiniz?')">Sil</a>

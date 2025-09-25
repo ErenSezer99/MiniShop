@@ -19,13 +19,14 @@ include_once __DIR__ . '/../config/database.php';
       | <a href="/MiniShop/admin/index.php">Dashboard</a>
       | <a href="/MiniShop/admin/products/products.php">Ürünler</a>
       | <a href="/MiniShop/admin/categories/categories.php">Kategoriler</a>
-      | <a href="/MiniShop/admin/orders/orders.php">Siparişler</a>
       | <a href="/MiniShop/admin/users/users.php">Kullanıcılar</a>
+      | <a href="/MiniShop/admin/orders/orders.php">Siparişleri Yönet</a>
     <?php endif; ?>
 
     <span style="float:right">
       <?php if (isset($_SESSION['user'])): ?>
         Hoşgeldin, <?= sanitize($_SESSION['user']['username']); ?> |
+        <a href="/MiniShop/account/orders_history.php">Siparişlerim</a> |
         <a href="/MiniShop/auth/logout.php">Çıkış Yap</a>
       <?php else: ?>
         <a href="/MiniShop/auth/login.php">Giriş Yap</a> |
