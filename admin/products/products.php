@@ -117,7 +117,7 @@ while ($row = pg_fetch_assoc($res_categories)) {
             </td>
             <td>
                 <a href="edit_product.php?id=<?= $product['id'] ?>">Düzenle</a>
-                <a href="delete_product.php?id=<?= $product['id'] ?>" onclick="return confirm('Silmek istediğinizden emin misiniz?')">Sil</a>
+                <a href="delete_product.php?id=<?= $product['id'] ?>">Sil</a>
             </td>
         </tr>
     <?php endforeach; ?>

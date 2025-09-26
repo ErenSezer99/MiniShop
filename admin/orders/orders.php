@@ -72,7 +72,7 @@ while ($row = pg_fetch_assoc($res_orders)) {
             <td><?= $order['formatted_date'] ?></td>
             <td>
                 <a href="edit_order.php?id=<?= $order['id'] ?>">Düzenle</a>
-                <a href="delete_order.php?id=<?= $order['id'] ?>" onclick="return confirm('Silmek istediğinizden emin misiniz?')">Sil</a>
+                <a href="delete_order.php?id=<?= $order['id'] ?>">Sil</a>
             </td>
         </tr>
     <?php endforeach; ?>

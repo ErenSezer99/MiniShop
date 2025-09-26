@@ -57,7 +57,7 @@ while ($row = pg_fetch_assoc($res_users)) {
             <td>
                 <?php if ($user['role'] === 'user'): ?>
                     <a href="users.php?id=<?= $user['id'] ?>&change_role=1&role=admin">Admin Yap</a> |
-                    <a href="delete_user.php?id=<?= $user['id'] ?>" onclick="return confirm('Bu kullanıcıyı silmek istediğinizden emin misiniz?')">Sil</a>
+                    <a href="delete_user.php?id=<?= $user['id'] ?>">Sil</a>
                 <?php else: ?>
                     <a href="users.php?id=<?= $user['id'] ?>&change_role=1&role=user">User Yap</a>
                 <?php endif; ?>

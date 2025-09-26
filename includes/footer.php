@@ -5,6 +5,7 @@
 <footer>
   <p>&copy; <?php echo date("Y"); ?> MiniShop. Tüm hakları saklıdır.</p>
 </footer>
+<script src="/MiniShop/assets/js/main.js"></script>
 </body>
 
 </html>

@@ -123,7 +123,7 @@ while ($row = pg_fetch_assoc($res_categories)) {
                 </td>
                 <td>
                     <a href="categories.php?edit=<?= urlencode($cat['id']); ?>">Düzenle</a>
-                    <a href="categories.php?delete=<?= urlencode($cat['id']); ?>" onclick="return confirm('Bu kategoriyi silmek istediğinize emin misiniz?')">Sil</a>
+                    <a href="categories.php?delete=<?= urlencode($cat['id']); ?>">Sil</a>
                 </td>
             </tr>
         <?php endforeach; ?>

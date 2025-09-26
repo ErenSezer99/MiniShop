@@ -12,28 +12,32 @@ include_once __DIR__ . '/../config/database.php';
 </head>
 
 <body>
+  <!-- Loading Spinner -->
+  <div id="loading-spinner">
+    <div class="spinner"></div>
+  </div>
+
   <header class="site-nav">
-    <a href="/MiniShop/products/index.php">MiniShop</a>
-
+    <a href="/MiniShop/products/index.php" class="nav-link">MiniShop</a>
     <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] === 'admin'): ?>
-      | <a href="/MiniShop/admin/index.php">Dashboard</a>
-      | <a href="/MiniShop/admin/products/products.php">Ürünler</a>
-      | <a href="/MiniShop/admin/categories/categories.php">Kategoriler</a>
-      | <a href="/MiniShop/admin/users/users.php">Kullanıcılar</a>
-      | <a href="/MiniShop/admin/orders/orders.php">Siparişleri Yönet</a>
+      | <a href="/MiniShop/admin/index.php" class="nav-link">Dashboard</a>
+      | <a href="/MiniShop/admin/products/products.php" class="nav-link">Ürünler</a>
+      | <a href="/MiniShop/admin/categories/categories.php" class="nav-link">Kategoriler</a>
+      | <a href="/MiniShop/admin/users/users.php" class="nav-link">Kullanıcılar</a>
+      | <a href="/MiniShop/admin/orders/orders.php" class="nav-link">Siparişleri Yönet</a>
     <?php endif; ?>
-
     <span style="float:right">
       <?php if (isset($_SESSION['user'])): ?>
         Hoşgeldin, <?= sanitize($_SESSION['user']['username']); ?> |
-        <a href="/MiniShop/account/orders_history.php">Siparişlerim</a> |
-        <a href="/MiniShop/auth/logout.php">Çıkış Yap</a>
+        <a href="/MiniShop/account/orders_history.php" class="nav-link">Siparişlerim</a> |
+        <a href="/MiniShop/auth/logout.php" class="nav-link">Çıkış Yap</a>
       <?php else: ?>
-        <a href="/MiniShop/auth/login.php">Giriş Yap</a> |
-        <a href="/MiniShop/auth/register.php">Kayıt Ol</a>
+        <a href="/MiniShop/auth/login.php" class="nav-link">Giriş Yap</a> |
+        <a href="/MiniShop/auth/register.php" class="nav-link">Kayıt Ol</a>
       <?php endif; ?>
     </span>
   </header>
+
 
   <main class="site-main">
     <?php

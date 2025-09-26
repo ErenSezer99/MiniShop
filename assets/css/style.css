@@ -1,3 +1,4 @@
+/* Admin navigation */
 header.admin-nav {
     background: #f4f4f4;
     padding: 10px;
@@ -8,6 +9,7 @@ header.admin-nav a {
     margin-right: 10px;
 }
 
+/* Flash mesajları */
 .flash {
     padding: 8px;
     margin: 10px 0;
@@ -105,6 +107,7 @@ header.admin-nav a {
     margin-top: 5px;
 }
 
+/* Sepete ekle butonu */
 .btn-add-cart {
     margin-top: 5px;
     padding: 5px 10px;
@@ -115,7 +118,7 @@ header.admin-nav a {
     cursor: pointer;
 }
 
-/* Pagination */
+/* Sayfalama */
 .pagination {
     margin-top: 20px;
     text-align: center;
@@ -143,3 +146,26 @@ footer {
     color: #666;
 }
 
+/* Spinner */
+#loading-spinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    display: none;
+}
+
+#loading-spinner .spinner {
+    width: 50px;
+    height: 50px;
+    border: 6px solid #f3f3f3; 
+    border-top: 6px solid #3498db; 
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

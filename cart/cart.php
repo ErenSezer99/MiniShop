@@ -75,7 +75,7 @@ if (is_logged_in()) {
     </table>
     <p style="text-align:right; font-weight:bold;">Toplam: <?= number_format($total, 2) ?> ₺</p>
 
-    <!-- Checkout / Ödeme Butonu -->
+    <!-- Ödeme Yap Butonu -->
     <div style="margin-top:20px; text-align:right;">
         <a href="checkout.php" class="btn-checkout" style="padding:8px 15px; background:#28a745; color:#fff; text-decoration:none; border-radius:4px;">Ödeme Yap</a>
     </div>
