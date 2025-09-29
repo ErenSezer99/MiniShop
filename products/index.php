@@ -29,6 +29,17 @@ $products = [];
 while ($row = pg_fetch_assoc($res_products)) {
     $products[] = $row;
 }
+
+// Kullanıcının favori ürünleri
+$user_favs = [];
+if (is_logged_in()) {
+    $user_id = current_user_id();
+    pg_prepare($dbconn, "select_wishlist", "SELECT product_id FROM wishlist WHERE user_id = $1");
+    $res_wishlist = pg_execute($dbconn, "select_wishlist", [$user_id]);
+    while ($row = pg_fetch_assoc($res_wishlist)) {
+        $user_favs[] = $row['product_id'];
+    }
+}
 ?>
 
 <h2>Ürünler</h2>
@@ -41,7 +52,9 @@ while ($row = pg_fetch_assoc($res_products)) {
     <?php foreach ($products as $product): ?>
         <div class="product-card">
             <?php if ($product['image']): ?>
-                <img src="/MiniShop/uploads/<?= sanitize($product['image']) ?>" alt="<?= sanitize($product['name']) ?>" class="product-img">
+                <img src="/MiniShop/uploads/<?= sanitize($product['image']) ?>"
+                    alt="<?= sanitize($product['name']) ?>"
+                    class="product-img">
             <?php endif; ?>
 
             <h3 class="product-name"><?= sanitize($product['name']) ?></h3>
@@ -53,6 +66,20 @@ while ($row = pg_fetch_assoc($res_products)) {
                 <input type="number" name="quantity" value="1" min="1" class="qty-input">
                 <button type="submit" class="btn-add-cart">Sepete Ekle</button>
             </form>
+
+            <!-- Favoriler Butonu -->
+            <?php
+            $isFav = in_array($product['id'], $user_favs);
+            $favAction = $isFav ? 'remove' : 'add';
+            $favIcon   = $isFav ? '♥' : '♡';
+            $favTitle  = $isFav ? 'Favorilerden çıkar' : 'Favorilere ekle';
+            ?>
+            <button
+                class="btn-fav"
+                data-product-id="<?= $product['id'] ?>"
+                data-action="<?= $favAction ?>"
+                title="<?= $favTitle ?>"><?= $favIcon ?></button>
+
         </div>
     <?php endforeach; ?>
 </div>
@@ -64,9 +91,6 @@ while ($row = pg_fetch_assoc($res_products)) {
         <?php endfor; ?>
     <?php endif; ?>
 </div>
-
-<script src="/MiniShop/assets/js/main.js"></script>
-<script src="/MiniShop/assets/js/cart.js"></script>
 
 <?php
 include_once __DIR__ . '/../includes/footer.php';

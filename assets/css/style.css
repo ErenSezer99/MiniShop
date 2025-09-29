@@ -169,3 +169,18 @@ footer {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+/* Favoriler */
+.btn-fav {
+    font-size: 22px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition: color 0.2s, transform 0.2s;
+    margin-top: 5px;
+}
+
+.btn-fav:hover {
+    color: red;
+    transform: scale(1.2);
+}

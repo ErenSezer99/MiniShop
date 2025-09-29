@@ -30,6 +30,7 @@ include_once __DIR__ . '/../config/database.php';
       <?php if (isset($_SESSION['user'])): ?>
         Hoşgeldin, <?= sanitize($_SESSION['user']['username']); ?> |
         <a href="/MiniShop/account/orders_history.php" class="nav-link">Siparişlerim</a> |
+        <a href="/MiniShop/wishlist/index.php" class="nav-link">Favorilerim</a> |
         <a href="/MiniShop/auth/logout.php" class="nav-link">Çıkış Yap</a>
       <?php else: ?>
         <a href="/MiniShop/auth/login.php" class="nav-link">Giriş Yap</a> |
