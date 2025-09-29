@@ -91,39 +91,69 @@ while ($row = pg_fetch_assoc($res_categories)) {
 
 <!-- Ürün Listesi Tablosu -->
 <h2>Ürünler</h2>
+
+<!-- Search UI (AJAX) -->
+<form id="product-search-form" onsubmit="return false;" style="margin-bottom:12px;">
+    <input
+        type="search"
+        id="product-search"
+        name="keyword"
+        placeholder="Ürün ara (isim, açıklama)..."
+        value="<?= sanitize($_GET['q'] ?? '') ?>"
+        style="padding:6px; width:320px;"
+        autocomplete="off">
+
+    <select id="product-category-filter" name="category" style="padding:6px; margin-left:8px;">
+        <option value="0">Tüm Kategoriler</option>
+        <?php foreach ($categories as $cat): ?>
+            <option value="<?= $cat['id'] ?>" <?= (isset($_GET['category']) && $_GET['category'] == $cat['id']) ? 'selected' : '' ?>>
+                <?= sanitize($cat['name']) ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
+</form>
+
+<!-- Spinner -->
+<div id="loading-spinner" style="display:none; margin-bottom:12px;"></div>
+
 <table border="1" cellpadding="10" cellspacing="0">
-    <tr>
-        <th>ID</th>
-        <th>Ürün Adı</th>
-        <th>Açıklama</th>
-        <th>Fiyat</th>
-        <th>Stok</th>
-        <th>Kategori</th>
-        <th>Resim</th>
-        <th>İşlemler</th>
-    </tr>
-    <?php foreach ($products as $product): ?>
+    <thead>
         <tr>
-            <td><?= $product['id'] ?></td>
-            <td><?= sanitize($product['name']) ?></td>
-            <td><?= sanitize($product['description']) ?></td>
-            <td><?= $product['price'] ?></td>
-            <td><?= $product['stock'] ?></td>
-            <td><?= sanitize($product['category_name']) ?></td>
-            <td>
-                <?php if ($product['image']): ?>
-                    <img src="../../uploads/<?= $product['image'] ?>" alt="<?= sanitize($product['name']) ?>" width="50">
-                <?php endif; ?>
-            </td>
-            <td>
-                <a href="edit_product.php?id=<?= $product['id'] ?>">Düzenle</a>
-                <a href="delete_product.php?id=<?= $product['id'] ?>">Sil</a>
-            </td>
+            <th>ID</th>
+            <th>Ürün Adı</th>
+            <th>Açıklama</th>
+            <th>Fiyat</th>
+            <th>Stok</th>
+            <th>Kategori</th>
+            <th>Resim</th>
+            <th>İşlemler</th>
         </tr>
-    <?php endforeach; ?>
+    </thead>
+
+    <tbody id="products-tbody">
+        <?php foreach ($products as $product): ?>
+            <tr data-product-id="<?= $product['id'] ?>">
+                <td><?= $product['id'] ?></td>
+                <td><?= sanitize($product['name']) ?></td>
+                <td><?= sanitize($product['description']) ?></td>
+                <td><?= $product['price'] ?></td>
+                <td><?= $product['stock'] ?></td>
+                <td><?= sanitize($product['category_name']) ?></td>
+                <td>
+                    <?php if ($product['image']): ?>
+                        <img src="../../uploads/<?= $product['image'] ?>" alt="<?= sanitize($product['name']) ?>" width="50">
+                    <?php endif; ?>
+                </td>
+                <td>
+                    <a href="edit_product.php?id=<?= $product['id'] ?>">Düzenle</a>
+                    <a href="delete_product.php?id=<?= $product['id'] ?>">Sil</a>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+    </tbody>
 </table>
 
-<!-- Sayfalama Linkleri -->
+<!-- Sayfalama Linkleri (aynı eskisi gibi) -->
 <div style="margin-top:15px;">
     <?php if ($total_pages > 1): ?>
         <?php for ($i = 1; $i <= $total_pages; $i++): ?>
@@ -134,6 +164,8 @@ while ($row = pg_fetch_assoc($res_categories)) {
         <?php endfor; ?>
     <?php endif; ?>
 </div>
+
+<script src="/MiniShop/assets/js/admin-products-search.js"></script>
 
 <?php
 include_once __DIR__ . '/../../includes/footer.php';

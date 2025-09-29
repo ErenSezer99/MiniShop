@@ -22,7 +22,7 @@ document.querySelectorAll('.add-to-cart-form').forEach(form => {
 // Sepet miktarı güncelleme
 document.querySelectorAll('.cart-qty').forEach(input => {
     input.addEventListener('change', function() {
-        setSpinner(true); // spinner göster
+        setSpinner(true);
         const tr = this.closest('tr');
         const product_id = tr.dataset.productId;
         const quantity = parseInt(this.value);
