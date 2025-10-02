@@ -77,69 +77,148 @@ while ($row = pg_fetch_assoc($res_categories)) {
 
 ?>
 
-<div class="container">
-    <h2>Kategoriler</h2>
-
-    <?php
-    $flash = get_flash();
-    if ($flash) {
-        echo "<p style='color:" . ($flash['type'] === 'success' ? 'green' : 'red') . ";'>" . sanitize($flash['message']) . "</p>";
-    }
-    ?>
-
-    <!-- Kategori ekleme / güncelleme formu -->
-    <form method="post" enctype="multipart/form-data">
-        <label for="name"><?= $edit_category ? 'Kategori Adını Düzenle:' : 'Yeni Kategori:' ?></label>
-        <input type="text" name="name" id="name" required value="<?= $edit_category ? sanitize($edit_category['name']) : '' ?>"><br>
-
-        <label for="description">Açıklama:</label>
-        <textarea name="description" id="description"><?= $edit_category ? sanitize($edit_category['description']) : '' ?></textarea><br>
-
-        <label for="image">Resim:</label>
-        <input type="file" name="image" id="image"><br>
-
-        <input type="hidden" name="edit_id" value="<?= $edit_category['id'] ?? '' ?>">
-        <button type="submit"><?= $edit_category ? 'Güncelle' : 'Ekle' ?></button>
-    </form>
-
-    <!-- Kategori listesi -->
-    <table border="1" cellpadding="8" cellspacing="0">
-        <tr>
-            <th>ID</th>
-            <th>Kategori Adı</th>
-            <th>Açıklama</th>
-            <th>Resim</th>
-            <th>İşlemler</th>
-        </tr>
-        <?php foreach ($categories as $cat): ?>
-            <tr>
-                <td><?= sanitize($cat['id']); ?></td>
-                <td><?= sanitize($cat['name']); ?></td>
-                <td><?= sanitize($cat['description']); ?></td>
-                <td>
-                    <?php if ($cat['image']): ?>
-                        <img src="../../uploads/<?= $cat['image'] ?>" alt="<?= sanitize($cat['name']) ?>" width="50">
-                    <?php endif; ?>
-                </td>
-                <td>
-                    <a href="categories.php?edit=<?= urlencode($cat['id']); ?>">Düzenle</a>
-                    <a href="categories.php?delete=<?= urlencode($cat['id']); ?>">Sil</a>
-                </td>
-            </tr>
-        <?php endforeach; ?>
-    </table>
-
-    <!-- Sayfalama linkleri -->
-    <div style="margin-top:15px;">
-        <?php if ($total_pages > 1): ?>
-            <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-                <a href="categories.php?page=<?= $i ?>"
-                    style="margin:0 5px; <?= $i == $page ? 'font-weight:bold; text-decoration:underline;' : '' ?>">
-                    <?= $i ?>
-                </a>
-            <?php endfor; ?>
-        <?php endif; ?>
-    </div>
+<div class="mb-8">
+    <h2 class="text-3xl font-bold text-gray-800">Kategori Yönetimi</h2>
+    <p class="text-gray-600">Yeni kategori ekleyebilir veya mevcut kategorileri yönetebilirsiniz.</p>
 </div>
 
+<!-- Kategori Ekleme / Güncelleme Formu -->
+<div class="bg-white rounded-lg shadow-md p-6 mb-8">
+    <h3 class="text-xl font-bold text-gray-800 mb-4"><?= $edit_category ? 'Kategori Düzenle' : 'Yeni Kategori Ekle' ?></h3>
+    <form method="post" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="md:col-span-2">
+            <label for="name" class="form-label"><?= $edit_category ? 'Kategori Adını Düzenle:' : 'Kategori Adı:' ?></label>
+            <input
+                type="text"
+                name="name"
+                id="name"
+                required
+                value="<?= $edit_category ? sanitize($edit_category['name']) : '' ?>"
+                class="form-input">
+        </div>
+
+        <div class="md:col-span-2">
+            <label for="description" class="form-label">Açıklama:</label>
+            <textarea
+                name="description"
+                id="description"
+                class="form-input"
+                rows="3"><?= $edit_category ? sanitize($edit_category['description']) : '' ?></textarea>
+        </div>
+
+        <div class="md:col-span-2">
+            <label for="image" class="form-label">Resim:</label>
+            <input type="file" name="image" id="image" class="form-input">
+            <?php if ($edit_category && $edit_category['image']): ?>
+                <div class="mt-2">
+                    <p class="text-sm text-gray-600 mb-2">Mevcut resim:</p>
+                    <img src="../../uploads/<?= $edit_category['image'] ?>" alt="<?= sanitize($edit_category['name']) ?>" class="w-16 h-16 object-cover rounded">
+                </div>
+            <?php endif; ?>
+        </div>
+
+        <input type="hidden" name="edit_id" value="<?= $edit_category['id'] ?? '' ?>">
+
+        <div class="md:col-span-2">
+            <button type="submit" class="form-button">
+                <i class="fas fa-<?= $edit_category ? 'sync' : 'plus' ?> mr-2"></i>
+                <?= $edit_category ? 'Güncelle' : 'Kategori Ekle' ?>
+            </button>
+            <?php if ($edit_category): ?>
+                <a href="categories.php" class="ml-2 form-button bg-gray-500 hover:bg-gray-600">
+                    <i class="fas fa-times mr-2"></i> İptal
+                </a>
+            <?php endif; ?>
+        </div>
+    </form>
+</div>
+
+<!-- Kategori listesi -->
+<div class="bg-white rounded-lg shadow-md p-6">
+    <div class="flex justify-between items-center mb-6">
+        <h3 class="text-xl font-bold text-gray-800">Kategoriler</h3>
+
+        <!-- Search UI (AJAX) -->
+        <form id="category-search-form" onsubmit="return false;" class="flex">
+            <input
+                type="search"
+                id="category-search"
+                name="keyword"
+                placeholder="Kategori ara..."
+                class="form-input"
+                autocomplete="off">
+        </form>
+    </div>
+
+    <!-- Spinner -->
+    <div id="loading-spinner" class="hidden mb-6">
+        <div class="flex justify-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Kategori Adı</th>
+                    <th>Açıklama</th>
+                    <th>Resim</th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+            <tbody id="categories-tbody">
+                <?php if (empty($categories)): ?>
+                    <tr>
+                        <td colspan="5" class="text-center text-gray-500 py-4">
+                            Henüz kategori eklenmemiş.
+                        </td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($categories as $cat): ?>
+                        <tr>
+                            <td><?= sanitize($cat['id']); ?></td>
+                            <td><?= sanitize($cat['name']); ?></td>
+                            <td><?= sanitize($cat['description']); ?></td>
+                            <td>
+                                <?php if ($cat['image']): ?>
+                                    <img src="../../uploads/<?= $cat['image'] ?>" alt="<?= sanitize($cat['name']) ?>" class="w-16 h-16 object-cover rounded">
+                                <?php else: ?>
+                                    <div class="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16 flex items-center justify-center text-gray-500">
+                                        <i class="fas fa-image"></i>
+                                    </div>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <a href="categories.php?edit=<?= urlencode($cat['id']); ?>" class="btn-edit mr-2">
+                                    <i class="fas fa-edit"></i> Düzenle
+                                </a>
+                                <a href="categories.php?delete=<?= urlencode($cat['id']); ?>" class="btn-delete">
+                                    <i class="fas fa-trash"></i> Sil
+                                </a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Sayfalama linkleri -->
+    <?php if ($total_pages > 1): ?>
+        <div class="flex justify-center mt-6">
+            <nav class="inline-flex rounded-md shadow">
+                <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                    <a href="categories.php?page=<?= $i ?>"
+                        class="px-4 py-2 <?= $i == $page ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50' ?> border border-gray-300 first:rounded-l-md last:rounded-r-md">
+                        <?= $i ?>
+                    </a>
+                <?php endfor; ?>
+            </nav>
+        </div>
+    <?php endif; ?>
+</div>
+
+<script src="/MiniShop/assets/js/admin-categories-search.js"></script>
 <?php include_once __DIR__ . '/../../includes/footer.php'; ?>

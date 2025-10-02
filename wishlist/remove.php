@@ -5,7 +5,7 @@ header('Content-Type: application/json');
 
 // Kullanıcı giriş kontrolü
 if (!is_logged_in()) {
-    echo json_encode(['status' => 'error', 'message' => 'Giriş yapmalısınız']);
+    echo json_encode(['success' => false, 'message' => 'Giriş yapmalısınız']);
     exit();
 }
 
@@ -13,7 +13,7 @@ $user_id = current_user_id();
 $product_id = (int) ($_POST['product_id'] ?? 0);
 
 if (!$product_id) {
-    echo json_encode(['status' => 'error', 'message' => 'Geçersiz ürün']);
+    echo json_encode(['success' => false, 'message' => 'Geçersiz ürün']);
     exit();
 }
 
@@ -22,7 +22,7 @@ pg_prepare($dbconn, "delete_wishlist", "DELETE FROM wishlist WHERE user_id=$1 AN
 $res = pg_execute($dbconn, "delete_wishlist", [$user_id, $product_id]);
 
 if ($res) {
-    echo json_encode(['status' => 'success', 'message' => 'Ürün favorilerden kaldırıldı']);
+    echo json_encode(['success' => true, 'message' => 'Ürün favorilerden kaldırıldı']);
 } else {
-    echo json_encode(['status' => 'error', 'message' => 'Bir hata oluştu']);
+    echo json_encode(['success' => false, 'message' => 'Bir hata oluştu']);
 }

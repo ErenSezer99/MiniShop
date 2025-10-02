@@ -37,7 +37,10 @@ if ($res) {
 }
 ?>
 
-<h2>Admin Dashboard</h2>
+<div class="mb-8">
+    <h2 class="text-3xl font-bold text-gray-800">Admin Dashboard</h2>
+    <p class="text-gray-600">Yönetim paneline hoş geldiniz. Aşağıdaki menüden işlemleri yönetebilirsiniz.</p>
+</div>
 
 <div class="admin-stats">
     <div class="admin-stat">
@@ -58,6 +61,54 @@ if ($res) {
     </div>
 </div>
 
-<p>Soldaki menüden kategori veya ürün yönetimini seçerek devam edebilirsiniz.</p>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+    <a href="/MiniShop/admin/products/products.php" class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-300">
+        <div class="flex items-center">
+            <div class="bg-blue-100 p-3 rounded-full mr-4">
+                <i class="fas fa-box text-blue-600 text-xl"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-gray-800">Ürünler</h3>
+                <p class="text-gray-600">Ürün yönetimi</p>
+            </div>
+        </div>
+    </a>
+
+    <a href="/MiniShop/admin/categories/categories.php" class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-300">
+        <div class="flex items-center">
+            <div class="bg-green-100 p-3 rounded-full mr-4">
+                <i class="fas fa-tags text-green-600 text-xl"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-gray-800">Kategoriler</h3>
+                <p class="text-gray-600">Kategori yönetimi</p>
+            </div>
+        </div>
+    </a>
+
+    <a href="/MiniShop/admin/orders/orders.php" class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-300">
+        <div class="flex items-center">
+            <div class="bg-yellow-100 p-3 rounded-full mr-4">
+                <i class="fas fa-shopping-cart text-yellow-600 text-xl"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-gray-800">Siparişler</h3>
+                <p class="text-gray-600">Sipariş yönetimi</p>
+            </div>
+        </div>
+    </a>
+
+    <a href="/MiniShop/admin/users/users.php" class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-300">
+        <div class="flex items-center">
+            <div class="bg-purple-100 p-3 rounded-full mr-4">
+                <i class="fas fa-users text-purple-600 text-xl"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-gray-800">Kullanıcılar</h3>
+                <p class="text-gray-600">Kullanıcı yönetimi</p>
+            </div>
+        </div>
+    </a>
+</div>
 
 <?php include_once __DIR__ . '/../includes/footer.php'; ?>

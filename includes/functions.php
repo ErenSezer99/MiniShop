@@ -95,8 +95,44 @@ function require_admin()
  */
 function redirect($url)
 {
-  header("Location: $url");
-  exit();
+  // Check if headers have already been sent
+  if (!headers_sent()) {
+    header("Location: $url");
+    exit();
+  } else {
+    // Fallback to JavaScript redirect if headers already sent
+    echo "<script>window.location.href='$url';</script>";
+    echo "<noscript><meta http-equiv='refresh' content='0;url=$url'></noscript>";
+    exit();
+  }
+}
+
+/*
+ * Sepet öğe sayısı
+ */
+function get_cart_count()
+{
+  global $dbconn;
+  $count = 0;
+
+  if (is_logged_in()) {
+    // Kullanıcı login ise veritabanından çek
+    $user_id = current_user_id();
+    pg_prepare($dbconn, "count_cart", "SELECT SUM(quantity) as total FROM cart WHERE user_id=$1");
+    $res = pg_execute($dbconn, "count_cart", [$user_id]);
+    if ($row = pg_fetch_assoc($res)) {
+      $count = (int)$row['total'];
+    }
+  } else {
+    // Misafir, session tabanlı
+    if (!empty($_SESSION['cart'])) {
+      foreach ($_SESSION['cart'] as $quantity) {
+        $count += $quantity;
+      }
+    }
+  }
+
+  return $count;
 }
 
 /*

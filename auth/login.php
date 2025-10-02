@@ -46,25 +46,65 @@ $csrf_token = generate_csrf_token();
 ?>
 <?php include "../includes/header.php"; ?>
 
-<h2>Giriş Yap</h2>
+<div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
+    <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">Giriş Yap</h2>
 
-<?php if ($flash): ?>
-    <div class="flash <?php echo sanitize($flash['type']); ?>"><?php echo sanitize($flash['message']); ?></div>
-<?php endif; ?>
+    <?php if ($flash): ?>
+        <div class="flash <?php echo sanitize($flash['type']); ?> mb-6">
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                <span class="block sm:inline"><?php echo sanitize($flash['message']); ?></span>
+            </div>
+        </div>
+    <?php endif; ?>
 
-<?php if ($message): ?>
-    <div class="error"><?php echo sanitize($message); ?></div>
-<?php endif; ?>
+    <?php if ($message): ?>
+        <div class="mb-6">
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <span class="block sm:inline"><?php echo sanitize($message); ?></span>
+            </div>
+        </div>
+    <?php endif; ?>
 
-<form method="post" action="">
-    <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-    <label>Email:</label><br>
-    <input type="email" name="email" required value="<?php echo isset($email) ? sanitize($email) : ''; ?>"><br><br>
+    <form method="post" action="" class="space-y-6">
+        <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
 
-    <label>Şifre:</label><br>
-    <input type="password" name="password" required><br><br>
+        <div>
+            <label for="email" class="form-label">Email:</label>
+            <input
+                type="email"
+                id="email"
+                name="email"
+                required
+                value="<?php echo isset($email) ? sanitize($email) : ''; ?>"
+                class="form-input"
+                placeholder="ornek@email.com">
+        </div>
 
-    <input type="submit" value="Giriş Yap">
-</form>
+        <div>
+            <label for="password" class="form-label">Şifre:</label>
+            <input
+                type="password"
+                id="password"
+                name="password"
+                required
+                class="form-input"
+                placeholder="••••••••">
+        </div>
+
+        <div>
+            <input
+                type="submit"
+                value="Giriş Yap"
+                class="form-button w-full">
+        </div>
+    </form>
+
+    <div class="mt-6 text-center">
+        <p class="text-gray-600">
+            Hesabınız yok mu?
+            <a href="/MiniShop/auth/register.php" class="text-blue-600 hover:text-blue-800 font-medium">Kayıt Ol</a>
+        </p>
+    </div>
+</div>
 
 <?php include "../includes/footer.php"; ?>

@@ -29,6 +29,9 @@ if (is_logged_in()) {
         pg_prepare($dbconn, "insert_cart", "INSERT INTO cart (user_id, product_id, quantity) VALUES ($1,$2,$3)");
         pg_execute($dbconn, "insert_cart", [$user_id, $product_id, $quantity]);
     }
+    
+    // Get updated cart count
+    $cart_count = get_cart_count();
 } else {
     // Misafir, session tabanlı
     if (!isset($_SESSION['cart'])) $_SESSION['cart'] = [];
@@ -37,6 +40,14 @@ if (is_logged_in()) {
     } else {
         $_SESSION['cart'][$product_id] = $quantity;
     }
+    
+    // Calculate cart count for guest user
+    $cart_count = 0;
+    if (!empty($_SESSION['cart'])) {
+        foreach ($_SESSION['cart'] as $qty) {
+            $cart_count += $qty;
+        }
+    }
 }
 
-echo json_encode(['status' => 'success', 'message' => 'Ürün sepete eklendi']);
+echo json_encode(['status' => 'success', 'message' => 'Ürün sepete eklendi', 'cart_count' => $cart_count]);

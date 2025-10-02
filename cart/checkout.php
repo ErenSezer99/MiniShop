@@ -41,88 +41,221 @@ if (is_logged_in()) {
 // POST işlemi
 $order_created = false;
 $order_details = [];
+$error_message = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $guest_name = sanitize($_POST['guest_name'] ?? '');
     $guest_email = sanitize($_POST['guest_email'] ?? '');
     $guest_address = sanitize($_POST['guest_address'] ?? '');
 
-    $order_id = create_order($user_id, $cart_items, $total, $guest_name, $guest_email, $guest_address);
-
-    if ($order_id) {
-        // Sepeti temizle
-        if (!is_logged_in()) {
-            unset($_SESSION['cart']);
-        } else {
-            pg_prepare($dbconn, "clear_cart", "DELETE FROM cart WHERE user_id=$1");
-            pg_execute($dbconn, "clear_cart", [$user_id]);
-        }
-
-        $order_created = true;
-        $order_details = [
-            'id' => $order_id,
-            'guest_name' => $guest_name,
-            'guest_email' => $guest_email,
-            'guest_address' => $guest_address,
-            'total' => $total,
-            'items' => $cart_items
-        ];
+    // Email validation
+    if (!filter_var($guest_email, FILTER_VALIDATE_EMAIL)) {
+        $error_message = "Geçersiz e-posta adresi.";
     } else {
-        set_flash("Sipariş oluşturulamadı, lütfen tekrar deneyin.", "error");
+        $order_id = create_order($user_id, $cart_items, $total, $guest_name, $guest_email, $guest_address);
+
+        if ($order_id) {
+            // Sepeti temizle
+            if (!is_logged_in()) {
+                unset($_SESSION['cart']);
+            } else {
+                pg_prepare($dbconn, "clear_cart", "DELETE FROM cart WHERE user_id=$1");
+                pg_execute($dbconn, "clear_cart", [$user_id]);
+            }
+
+            $order_created = true;
+            $order_details = [
+                'id' => $order_id,
+                'guest_name' => $guest_name,
+                'guest_email' => $guest_email,
+                'guest_address' => $guest_address,
+                'total' => $total,
+                'items' => $cart_items
+            ];
+        } else {
+            $error_message = "Sipariş oluşturulamadı, lütfen tekrar deneyin.";
+        }
     }
 }
 ?>
 
-<h2>Ödeme Bilgileri</h2>
+<h2 class="text-3xl font-bold text-gray-800 mb-8">Ödeme Bilgileri</h2>
 
-<?php if ($flash = get_flash()): ?>
-    <p style="color:<?= $flash['type'] === 'error' ? 'red' : 'green' ?>; font-weight:bold;">
-        <?= sanitize($flash['message']) ?>
-    </p>
+<?php if ($error_message): ?>
+    <div class="mb-6">
+        <div class="bg-red-100 border-red-400 text-red-700 border px-4 py-3 rounded relative" role="alert">
+            <span class="block sm:inline"><?= sanitize($error_message) ?></span>
+        </div>
+    </div>
+<?php elseif ($flash = get_flash()): ?>
+    <div class="mb-6">
+        <div class="<?= $flash['type'] === 'error' ? 'bg-red-100 border-red-400 text-red-700' : 'bg-green-100 border-green-400 text-green-700' ?> border px-4 py-3 rounded relative" role="alert">
+            <span class="block sm:inline"><?= sanitize($flash['message']) ?></span>
+        </div>
+    </div>
 <?php endif; ?>
 
 <?php if ($order_created): ?>
-    <h3>Siparişiniz alındı! (#<?= $order_details['id'] ?>)</h3>
+    <div class="bg-white rounded-lg shadow-md p-8 max-w-2xl mx-auto">
+        <div class="text-center mb-8">
+            <i class="fas fa-check-circle text-green-500 text-6xl mb-4"></i>
+            <h3 class="text-2xl font-bold text-gray-800">Siparişiniz Alındı!</h3>
+            <p class="text-gray-600">Sipariş numaranız: #<?= $order_details['id'] ?></p>
+        </div>
 
-    <p><strong>Ad Soyad:</strong> <?= sanitize($order_details['guest_name']) ?></p>
-    <p><strong>Email:</strong> <?= sanitize($order_details['guest_email']) ?></p>
-    <p><strong>Adres:</strong> <?= sanitize($order_details['guest_address']) ?></p>
+        <div class="border-t border-b border-gray-200 py-6 mb-6">
+            <h4 class="text-xl font-semibold mb-4">Sipariş Detayları</h4>
 
-    <h4>Sipariş Detayları:</h4>
-    <ul>
-        <?php foreach ($order_details['items'] as $item): ?>
-            <li><?= sanitize($item['name']) ?> × <?= $item['quantity'] ?> = <?= number_format($item['price'] * $item['quantity'], 2) ?> ₺</li>
-        <?php endforeach; ?>
-    </ul>
-    <p><strong>Toplam: <?= number_format($order_details['total'], 2) ?> ₺</strong></p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <h5 class="font-medium text-gray-700 mb-2">Müşteri Bilgileri</h5>
+                    <p><strong>Ad Soyad:</strong> <?= sanitize($order_details['guest_name']) ?></p>
+                    <p><strong>Email:</strong> <?= sanitize($order_details['guest_email']) ?></p>
+                    <p><strong>Adres:</strong> <?= sanitize($order_details['guest_address']) ?></p>
+                </div>
+            </div>
 
+            <h5 class="font-medium text-gray-700 mb-2">Sipariş İçeriği</h5>
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Ürün</th>
+                            <th>Adet</th>
+                            <th>Fiyat</th>
+                            <th>Toplam</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($order_details['items'] as $item): ?>
+                            <tr>
+                                <td><?= sanitize($item['name']) ?></td>
+                                <td><?= $item['quantity'] ?></td>
+                                <td><?= number_format($item['price'], 2) ?> ₺</td>
+                                <td><?= number_format($item['price'] * $item['quantity'], 2) ?> ₺</td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="text-right">
+            <p class="text-xl font-bold">Toplam: <?= number_format($order_details['total'], 2) ?> ₺</p>
+        </div>
+
+        <div class="mt-8 text-center">
+            <a href="/MiniShop/products/index.php" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded inline-flex items-center">
+                <i class="fas fa-shopping-bag mr-2"></i> Alışverişe Devam Et
+            </a>
+        </div>
+    </div>
 <?php elseif (empty($cart_items)): ?>
-    <p>Sepetiniz boş.</p>
+    <div class="text-center py-12">
+        <i class="fas fa-shopping-cart text-6xl text-gray-300 mb-4"></i>
+        <h3 class="text-2xl font-semibold text-gray-700 mb-2">Sepetiniz Boş</h3>
+        <p class="text-gray-500 mb-6">Ödeme yapabilmeniz için sepetinizde ürün olmalıdır.</p>
+        <a href="/MiniShop/products/index.php" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded inline-flex items-center">
+            <i class="fas fa-shopping-bag mr-2"></i> Alışverişe Devam Et
+        </a>
+    </div>
 <?php else: ?>
-    <form method="POST" action="">
-        <p>
-            <label>Ad Soyad:</label><br>
-            <input type="text" name="guest_name" value="<?= is_logged_in() ? sanitize($_SESSION['user']['username']) : '' ?>" required>
-        </p>
-        <p>
-            <label>Email:</label><br>
-            <input type="email" name="guest_email" value="<?= is_logged_in() && isset($_SESSION['user']['email']) ? sanitize($_SESSION['user']['email']) : '' ?>" required>
-        </p>
-        <p>
-            <label>Adres:</label><br>
-            <textarea name="guest_address" required><?= is_logged_in() ? '' : '' ?></textarea>
-        </p>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-6">Teslimat Bilgileri</h3>
 
-        <h3>Sipariş Özeti</h3>
-        <ul>
-            <?php foreach ($cart_items as $item): ?>
-                <li><?= sanitize($item['name']) ?> × <?= $item['quantity'] ?> = <?= number_format($item['price'] * $item['quantity'], 2) ?> ₺</li>
-            <?php endforeach; ?>
-        </ul>
-        <p><strong>Toplam: <?= number_format($total, 2) ?> ₺</strong></p>
+            <form method="POST" action="" class="space-y-6" id="checkout-form">
+                <div>
+                    <label for="guest_name" class="form-label">Ad Soyad:</label>
+                    <input
+                        type="text"
+                        id="guest_name"
+                        name="guest_name"
+                        value="<?= is_logged_in() ? sanitize($_SESSION['user']['username']) : '' ?>"
+                        required
+                        class="form-input">
+                </div>
 
-        <button type="submit">Ödeme Yap</button>
-    </form>
+                <div>
+                    <label for="guest_email" class="form-label">Email:</label>
+                    <input
+                        type="email"
+                        id="guest_email"
+                        name="guest_email"
+                        value="<?= is_logged_in() && isset($_SESSION['user']['email']) ? sanitize($_SESSION['user']['email']) : '' ?>"
+                        required
+                        class="form-input">
+                </div>
+
+                <div>
+                    <label for="guest_address" class="form-label">Adres:</label>
+                    <textarea
+                        id="guest_address"
+                        name="guest_address"
+                        required
+                        class="form-input"
+                        rows="4"></textarea>
+                </div>
+
+                <div>
+                    <button type="submit" class="form-button w-full">
+                        <i class="fas fa-credit-card mr-2"></i> Ödeme Yap
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-6">Sipariş Özeti</h3>
+
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Ürün</th>
+                            <th>Adet</th>
+                            <th>Toplam</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($cart_items as $item): ?>
+                            <tr>
+                                <td><?= sanitize($item['name']) ?></td>
+                                <td><?= $item['quantity'] ?></td>
+                                <td><?= number_format($item['price'] * $item['quantity'], 2) ?> ₺</td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="border-t border-gray-200 mt-4 pt-4">
+                <div class="flex justify-between text-xl font-bold">
+                    <span>Toplam:</span>
+                    <span><?= number_format($total, 2) ?> ₺</span>
+                </div>
+            </div>
+        </div>
+    </div>
 <?php endif; ?>
+
+<script>
+    // Handle checkout form submission to prevent infinite spinner on validation errors
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkoutForm = document.getElementById('checkout-form');
+        const loadingSpinner = document.getElementById('loading-spinner');
+
+        if (checkoutForm) {
+            checkoutForm.addEventListener('submit', function(e) {
+                // Add a small delay to ensure spinner is hidden after form validation
+                setTimeout(function() {
+                    if (loadingSpinner) {
+                        loadingSpinner.classList.add('hidden');
+                    }
+                }, 100);
+            });
+        }
+    });
+</script>
 
 <?php include_once __DIR__ . '/../includes/footer.php'; ?>

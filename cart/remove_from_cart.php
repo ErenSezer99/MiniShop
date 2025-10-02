@@ -17,6 +17,9 @@ if (is_logged_in()) {
     // Sepetten sil
     pg_prepare($dbconn, "delete_cart_item", "DELETE FROM cart WHERE user_id=$1 AND product_id=$2");
     pg_execute($dbconn, "delete_cart_item", [$user_id, $product_id]);
+
+    // Get updated cart count
+    $cart_count = get_cart_count();
 } else {
     if (isset($_SESSION['cart'][$product_id])) {
         unset($_SESSION['cart'][$product_id]);
@@ -24,6 +27,14 @@ if (is_logged_in()) {
         echo json_encode(['status' => 'error', 'message' => 'Ürün sepetinizde yok']);
         exit;
     }
+
+    // Calculate cart count for guest user
+    $cart_count = 0;
+    if (!empty($_SESSION['cart'])) {
+        foreach ($_SESSION['cart'] as $qty) {
+            $cart_count += $qty;
+        }
+    }
 }
 
-echo json_encode(['status' => 'success', 'message' => 'Ürün sepetten silindi']);
+echo json_encode(['status' => 'success', 'message' => 'Ürün sepetten silindi', 'cart_count' => $cart_count]);

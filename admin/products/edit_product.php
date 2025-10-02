@@ -65,36 +65,65 @@ while ($row = pg_fetch_assoc($res_categories)) {
 }
 ?>
 
-<h2>Ürün Düzenle</h2>
-<form action="" method="post" enctype="multipart/form-data">
-    <label>Ürün Adı:</label>
-    <input type="text" name="name" value="<?= sanitize($product['name']) ?>" required><br>
+<div class="mb-8">
+    <h2 class="text-3xl font-bold text-gray-800">Ürün Düzenle</h2>
+    <p class="text-gray-600">Ürün bilgilerini güncelleyebilirsiniz.</p>
+</div>
 
-    <label>Açıklama:</label>
-    <textarea name="description" required><?= sanitize($product['description']) ?></textarea><br>
+<div class="bg-white rounded-lg shadow-md p-6">
+    <form action="" method="post" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+            <label for="name" class="form-label">Ürün Adı:</label>
+            <input type="text" id="name" name="name" value="<?= sanitize($product['name']) ?>" required class="form-input">
+        </div>
 
-    <label>Fiyat:</label>
-    <input type="number" step="0.01" name="price" value="<?= $product['price'] ?>" required><br>
+        <div>
+            <label for="price" class="form-label">Fiyat:</label>
+            <input type="number" step="0.01" id="price" name="price" value="<?= $product['price'] ?>" required class="form-input">
+        </div>
 
-    <label>Stok:</label>
-    <input type="number" name="stock" value="<?= $product['stock'] ?>" required><br>
+        <div>
+            <label for="stock" class="form-label">Stok:</label>
+            <input type="number" id="stock" name="stock" value="<?= $product['stock'] ?>" required class="form-input">
+        </div>
 
-    <label>Kategori:</label>
-    <select name="category_id" required>
-        <?php foreach ($categories as $cat): ?>
-            <option value="<?= $cat['id'] ?>" <?= $cat['id'] == $product['category_id'] ? 'selected' : '' ?>>
-                <?= sanitize($cat['name']) ?>
-            </option>
-        <?php endforeach; ?>
-    </select><br>
+        <div>
+            <label for="category_id" class="form-label">Kategori:</label>
+            <select id="category_id" name="category_id" required class="form-input">
+                <?php foreach ($categories as $cat): ?>
+                    <option value="<?= $cat['id'] ?>" <?= $cat['id'] == $product['category_id'] ? 'selected' : '' ?>>
+                        <?= sanitize($cat['name']) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
 
-    <label>Resim:</label>
-    <input type="file" name="image"><br>
-    <?php if (!empty($product['image'])): ?>
-        <img src="../../uploads/<?= $product['image'] ?>" width="80" alt="Ürün Resmi">
-    <?php endif; ?>
+        <div class="md:col-span-2">
+            <label for="description" class="form-label">Açıklama:</label>
+            <textarea id="description" name="description" required class="form-input" rows="3"><?= sanitize($product['description']) ?></textarea>
+        </div>
 
-    <button type="submit" name="update_product">Güncelle</button>
-</form>
+        <div class="md:col-span-2">
+            <label for="image" class="form-label">Resim:</label>
+            <input type="file" id="image" name="image" class="form-input">
+
+            <?php if (!empty($product['image'])): ?>
+                <div class="mt-4">
+                    <p class="text-gray-700 mb-2">Mevcut Resim:</p>
+                    <img src="../../uploads/<?= $product['image'] ?>" alt="Ürün Resmi" class="w-32 h-32 object-cover rounded">
+                </div>
+            <?php endif; ?>
+        </div>
+
+        <div class="md:col-span-2">
+            <button type="submit" name="update_product" class="form-button">
+                <i class="fas fa-save mr-2"></i> Ürünü Güncelle
+            </button>
+            <a href="products.php" class="ml-4 bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded inline-flex items-center">
+                <i class="fas fa-arrow-left mr-2"></i> Geri
+            </a>
+        </div>
+    </form>
+</div>
 
 <?php include_once __DIR__ . '/../../includes/footer.php'; ?>

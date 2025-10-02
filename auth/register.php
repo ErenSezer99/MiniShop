@@ -6,6 +6,8 @@ include_once "../config/database.php";
 
 $flash = get_flash();
 $message = "";
+$username = "";  // Initialize username as empty string
+$email = "";     // Initialize email as empty string
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // CSRF kontrolü
@@ -58,31 +60,109 @@ $csrf_token = generate_csrf_token();
 ?>
 <?php include "../includes/header.php"; ?>
 
-<h2>Kayıt Ol</h2>
+<div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
+    <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">Kayıt Ol</h2>
 
-<?php if ($flash): ?>
-    <div class="flash <?php echo sanitize($flash['type']); ?>"><?php echo sanitize($flash['message']); ?></div>
-<?php endif; ?>
+    <?php if ($flash): ?>
+        <div class="flash <?php echo sanitize($flash['type']); ?> mb-6">
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                <span class="block sm:inline"><?php echo sanitize($flash['message']); ?></span>
+            </div>
+        </div>
+    <?php endif; ?>
 
-<?php if ($message): ?>
-    <div class="error"><?php echo sanitize($message); ?></div>
-<?php endif; ?>
+    <?php if ($message): ?>
+        <div class="mb-6">
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <span class="block sm:inline"><?php echo sanitize($message); ?></span>
+            </div>
+        </div>
+    <?php endif; ?>
 
-<form method="post" action="">
-    <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-    <label>Kullanıcı Adı:</label><br>
-    <input type="text" name="username" required value="<?php echo isset($username) ? sanitize($username) : ''; ?>"><br><br>
+    <form method="post" action="" class="space-y-6" id="register-form">
+        <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
 
-    <label>Email:</label><br>
-    <input type="email" name="email" required value="<?php echo isset($email) ? sanitize($email) : ''; ?>"><br><br>
+        <div>
+            <label for="username" class="form-label">Kullanıcı Adı:</label>
+            <input
+                type="text"
+                id="username"
+                name="username"
+                required
+                value="<?php echo $username; ?>"
+                class="form-input"
+                placeholder="Kullanıcı adınızı girin">
+        </div>
 
-    <label>Şifre:</label><br>
-    <input type="password" name="password" required><br><br>
+        <div>
+            <label for="email" class="form-label">Email:</label>
+            <input
+                type="email"
+                id="email"
+                name="email"
+                required
+                value="<?php echo $email; ?>"
+                class="form-input"
+                placeholder="ornek@email.com">
+        </div>
 
-    <label>Şifre Tekrar:</label><br>
-    <input type="password" name="confirm_password" required><br><br>
+        <div>
+            <label for="password" class="form-label">Şifre:</label>
+            <input
+                type="password"
+                id="password"
+                name="password"
+                required
+                class="form-input"
+                placeholder="••••••••">
+        </div>
 
-    <input type="submit" value="Kayıt Ol">
-</form>
+        <div>
+            <label for="confirm_password" class="form-label">Şifre Tekrar:</label>
+            <input
+                type="password"
+                id="confirm_password"
+                name="confirm_password"
+                required
+                class="form-input"
+                placeholder="••••••••">
+        </div>
+
+        <div>
+            <input
+                type="submit"
+                value="Kayıt Ol"
+                class="form-button w-full"
+                id="register-submit">
+        </div>
+    </form>
+
+    <div class="mt-6 text-center">
+        <p class="text-gray-600">
+            Zaten hesabınız var mı?
+            <a href="/MiniShop/auth/login.php" class="text-blue-600 hover:text-blue-800 font-medium">Giriş Yap</a>
+        </p>
+    </div>
+</div>
+
+<script>
+    // Handle registration form submission to prevent infinite spinner on validation errors
+    document.addEventListener('DOMContentLoaded', function() {
+        const registerForm = document.getElementById('register-form');
+        const loadingSpinner = document.getElementById('loading-spinner');
+
+        // Always hide spinner on page load for registration page
+        if (loadingSpinner) {
+            loadingSpinner.classList.add('hidden');
+        }
+
+        if (registerForm) {
+            registerForm.addEventListener('submit', function(e) {
+                // For failed validations, spinner should be hidden immediately after page load
+                // For successful submissions, spinner will show during navigation
+            });
+        }
+    });
+</script>
 
 <?php include "../includes/footer.php"; ?>
