@@ -2,7 +2,7 @@
 include_once __DIR__ . '/functions.php';
 include_once __DIR__ . '/../config/database.php';
 
-// Get cart count for logged in users
+// Oturum açmış kullanıcılar için sepetteki ürün sayısını al
 $cart_count = 0;
 $is_logged_in = isset($_SESSION['user']);
 if ($is_logged_in) {
@@ -15,12 +15,12 @@ if ($is_logged_in) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MiniShop - Professional E-Commerce</title>
+  <title>MiniShop</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Font Awesome for icons -->
+  <!-- Font Awesome (iconlar için) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Custom styles -->
+  <!-- Style dosyası -->
   <link rel="stylesheet" href="/MiniShop/assets/css/style.css">
 </head>
 
@@ -42,7 +42,7 @@ if ($is_logged_in) {
         </div>
 
         <!-- Desktop Navigation -->
-        <nav class="hidden md:flex space-x-6">
+        <nav class="hidden lg:flex space-x-6">
           <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] === 'admin'): ?>
             <a href="/MiniShop/admin/index.php" class="text-gray-700 hover:text-blue-600 font-medium transition duration-300">Dashboard</a>
             <a href="/MiniShop/admin/products/products.php" class="text-gray-700 hover:text-blue-600 font-medium transition duration-300">Ürünler</a>
@@ -81,25 +81,26 @@ if ($is_logged_in) {
               </div>
             </div>
           <?php else: ?>
-            <a href="/MiniShop/auth/login.php" class="text-gray-700 hover:text-blue-600 font-medium transition duration-300">
-              <i class="fas fa-sign-in-alt mr-1"></i>Giriş Yap
-            </a>
-            <a href="/MiniShop/auth/register.php" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition duration-300">
-              Kayıt Ol
-            </a>
+            <!-- Desktop Giriş Yap/Kayıt Ol Butonları -->
+            <div class="hidden md:flex items-center space-x-4">
+              <a href="/MiniShop/auth/login.php" class="text-gray-700 hover:text-blue-600 font-medium transition duration-300">
+                <i class="fas fa-sign-in-alt mr-1"></i>Giriş Yap
+              </a>
+              <a href="/MiniShop/auth/register.php" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition duration-300">
+                Kayıt Ol
+              </a>
+            </div>
           <?php endif; ?>
+
+          <!-- Mobil menü butonu -->
+          <button id="mobile-menu-button" class="lg:hidden text-gray-700">
+            <i class="fas fa-bars text-2xl"></i>
+          </button>
         </div>
       </div>
 
-      <!-- Mobile Navigation Toggle -->
-      <div class="md:hidden flex justify-between items-center pb-4">
-        <button id="mobile-menu-button" class="text-gray-700">
-          <i class="fas fa-bars text-2xl"></i>
-        </button>
-      </div>
-
-      <!-- Mobile Menu -->
-      <div id="mobile-menu" class="md:hidden hidden pb-4">
+      <!-- Mobil Menü -->
+      <div id="mobile-menu" class="lg:hidden hidden pb-4">
         <div class="flex flex-col space-y-3">
           <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] === 'admin'): ?>
             <a href="/MiniShop/admin/index.php" class="text-gray-700 hover:text-blue-600 font-medium">Dashboard</a>
@@ -113,6 +114,14 @@ if ($is_logged_in) {
           <?php if (isset($_SESSION['user'])): ?>
             <a href="/MiniShop/account/orders_history.php" class="text-gray-700 hover:text-blue-600 font-medium">Siparişlerim</a>
             <a href="/MiniShop/auth/logout.php" class="text-gray-700 hover:text-blue-600 font-medium">Çıkış Yap</a>
+          <?php else: ?>
+            <!-- Mobil Giriş Yap/Kayıt Ol Butonları -->
+            <a href="/MiniShop/auth/login.php" class="text-gray-700 hover:text-blue-600 font-medium">
+              <i class="fas fa-sign-in-alt mr-1"></i>Giriş Yap
+            </a>
+            <a href="/MiniShop/auth/register.php" class="text-gray-700 hover:text-blue-600 font-medium">
+              <i class="fas fa-user-plus mr-1"></i>Kayıt Ol
+            </a>
           <?php endif; ?>
         </div>
       </div>
@@ -132,7 +141,7 @@ if ($is_logged_in) {
     }
     ?>
 
-    <!-- Pass login status to JavaScript -->
+    <!-- Oturum durumunu JS'e gönder -->
     <script>
       const isLoggedIn = <?= $is_logged_in ? 'true' : 'false' ?>;
     </script>

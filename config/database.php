@@ -1,13 +1,7 @@
 <?php
-// Veritabanı bağlantısı ayarları
-$host = "localhost";
-$port = "5432";
-$dbname = "minishop";
-$username = "postgres";
-$password = "Eren123";
+$config = include 'config.php';
 
-// pg_connect ile bağlantı
-$conn_string = "host=$host port=$port dbname=$dbname user=$username password=$password";
+$conn_string = "host={$config['host']} port={$config['port']} dbname={$config['dbname']} user={$config['username']} password={$config['password']}";
 $dbconn = pg_connect($conn_string);
 
 if (!$dbconn) {

@@ -1,14 +1,12 @@
 <?php
-// Footer dosyası - her sayfanın sonunda çağrılacak
 ?>
 
 </main>
 
-<!-- Footer -->
 <footer class="bg-gray-800 text-white py-8 flex-shrink-0">
   <div class="container mx-auto px-4">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-      <!-- About Section -->
+      <!-- Hakkımızda Bölümü -->
       <div>
         <h3 class="text-xl font-bold mb-4">MiniShop</h3>
         <p class="text-gray-300">
@@ -16,7 +14,7 @@
         </p>
       </div>
 
-      <!-- Links Section -->
+      <!-- Hızlı Linkler Bölümü -->
       <div>
         <h3 class="text-xl font-bold mb-4">Hızlı Linkler</h3>
         <ul class="space-y-2">
@@ -31,7 +29,7 @@
         </ul>
       </div>
 
-      <!-- Contact Section -->
+      <!-- İletişim Bölümü -->
       <div>
         <h3 class="text-xl font-bold mb-4">İletişim</h3>
         <ul class="space-y-2 text-gray-300">
@@ -57,42 +55,10 @@
   </div>
 </footer>
 
-<!-- Scripts -->
 <script src="/MiniShop/assets/js/main.js"></script>
 <script src="/MiniShop/assets/js/cart.js"></script>
 <script src="/MiniShop/assets/js/wishlist.js"></script>
 
-<!-- Menu Toggle Scripts -->
-<script>
-  // User menu toggle functionality
-  document.getElementById('user-menu-button').addEventListener('click', function(e) {
-    e.stopPropagation();
-    const menu = document.getElementById('user-menu');
-    const arrow = document.getElementById('user-menu-arrow');
-
-    menu.classList.toggle('hidden');
-    arrow.classList.toggle('rotate-180');
-  });
-
-  // Close user menu when clicking outside
-  document.addEventListener('click', function(event) {
-    const userMenu = document.getElementById('user-menu');
-    const userMenuButton = document.getElementById('user-menu-button');
-
-    if (userMenu && userMenuButton &&
-      !userMenu.contains(event.target) &&
-      !userMenuButton.contains(event.target)) {
-      userMenu.classList.add('hidden');
-      document.getElementById('user-menu-arrow').classList.remove('rotate-180');
-    }
-  });
-
-  // Mobile menu toggle
-  document.getElementById('mobile-menu-button').addEventListener('click', function() {
-    const menu = document.getElementById('mobile-menu');
-    menu.classList.toggle('hidden');
-  });
-</script>
 </body>
 
 </html>

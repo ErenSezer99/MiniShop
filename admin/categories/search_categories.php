@@ -48,7 +48,7 @@ if ($keyword !== '') {
         $response['html'] = $html;
     }
 } else {
-    // Return all categories if no keyword
+    // Keyword yoksa tüm kategorileri döndür
     $sql = "SELECT * FROM categories ORDER BY id DESC LIMIT 50";
     $res = pg_query($dbconn, $sql);
     if ($res) {

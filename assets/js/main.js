@@ -8,19 +8,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 3000);
     }
     
-    // Update cart badge on page load for logged in users
+    // Oturum açmış kullanıcılar için sayfa yüklendiğinde etiketi güncelle
     if (typeof isLoggedIn !== 'undefined' && isLoggedIn) {
         updateCartBadgeFromServer();
     }
     
-    // Hide spinner on page load
+    // Sayfa yüklendiğinde spinner'ı gizle
     setSpinner(false);
     
-    // If there are validation errors on registration page, ensure spinner is hidden
+    // Kayıt sırasındaki doğrulama hatalarında spinner'ı gizle
     if (window.location.pathname.includes('register.php')) {
         const errorMessages = document.querySelectorAll('.bg-red-100');
         if (errorMessages.length > 0) {
-            // There are error messages, ensure spinner is hidden
             setSpinner(false);
         }
     }
@@ -31,7 +30,7 @@ function showFlashMessage(message, type = 'success') {
     const msgDiv = document.createElement('div');
     msgDiv.className = 'flash ' + type;
     
-    // Tailwind classes based on message type
+    // Mesaj tipine göre tailwind sınıfları
     const bgColor = type === 'success' ? 'bg-green-100 border-green-400 text-green-700' : 'bg-red-100 border-red-400 text-red-700';
     msgDiv.className += ` ${bgColor} border px-4 py-3 rounded relative mb-4`;
     
@@ -83,24 +82,22 @@ document.addEventListener('click', (e) => {
         setSpinner(true);
     }
 
-    // 4. Form submit butonları - but exclude registration and checkout forms to prevent infinite spinner on validation errors
+    // 4. Form submit butonları - Kayıt ve ödeme formları hariç (infinite spinnerı engellemek için)
     if ((target.tagName === 'BUTTON' && target.type === 'submit') ||
         (target.tagName === 'INPUT' && target.type === 'submit')) {
         
-        // Check if this is the registration form submit button
+        // Kayıt formu submit butonu mu kontrol
         const form = target.closest('form');
         if (form && (form.id === 'register-form' || form.id === 'checkout-form')) {
-            // For registration and checkout forms, we'll handle spinner in the form's own script
-            // to avoid infinite spinner on validation errors
             return;
         }
         
-        // For all other forms, show spinner
+        // Diğer tüm formlar için spinner'ı göster
         setSpinner(true);
     }
     
-    // Wishlist button functionality - ONLY handle clicks that don't have data-action attribute
-    // This prevents duplicate handling with wishlist.js which handles buttons with data-action
+    // Favoriler butonu - Sadece data-action özelliği yoksa işle
+    // Wishlist.js ile aynı işlemin tekrarını önleme amaçlı
     if ((target.matches('.btn-fav') || target.closest('.btn-fav')) && 
         !target.hasAttribute('data-action') && 
         !target.closest('.btn-fav').hasAttribute('data-action')) {
@@ -109,11 +106,11 @@ document.addEventListener('click', (e) => {
         const productId = button.getAttribute('data-product-id');
         const action = button.classList.contains('active') ? 'remove' : 'add';
         
-        // Toggle active class immediately for better UX
+        // Favori simgesini hemen değiş (daha iyi UX için)
         button.classList.toggle('active');
         button.textContent = button.classList.contains('active') ? '♥' : '♡';
         
-        // Send request to server
+        // Server'a istek gönder
         fetch(`/MiniShop/wishlist/${action}.php`, {
             method: 'POST',
             headers: {
@@ -126,14 +123,14 @@ document.addEventListener('click', (e) => {
             if (data.success) {
                 showFlashMessage(data.message, 'success');
             } else {
-                // Revert changes if request failed
+                // İstek başarısızsa değişikliği geri al
                 button.classList.toggle('active');
                 button.textContent = button.classList.contains('active') ? '♥' : '♡';
                 showFlashMessage(data.message || 'Bir hata oluştu', 'error');
             }
         })
         .catch(error => {
-            // Revert changes if request failed
+            // İstek başarısızsa değişikliği geri al
             button.classList.toggle('active');
             button.textContent = button.classList.contains('active') ? '♥' : '♡';
             showFlashMessage('Bir hata oluştu', 'error');
@@ -150,9 +147,9 @@ window.addEventListener('load', () => {
     setSpinner(false);
 });
 
-// Function to update cart badge from server
+// Sunucudan sepet etiketini güncelleme işlevi
 function updateCartBadgeFromServer() {
-    // Only update for logged in users
+    // Sadece oturum açmış kullanıcılar için güncelle
     if (document.querySelector('a[href="/MiniShop/cart/cart.php"]')) {
         fetch('/MiniShop/cart/get_cart_count.php')
             .then(response => response.json())
@@ -165,18 +162,18 @@ function updateCartBadgeFromServer() {
     }
 }
 
-// Update cart badge every 30 seconds for logged in users
+// 30 saniyede bir sepet etiketini güncelle
 if (typeof isLoggedIn !== 'undefined' && isLoggedIn) {
     setInterval(updateCartBadgeFromServer, 30000);
 }
 
-// Function to update cart badge UI with specific count
+// Sepet etiketini belirli sayıda güncelleme
 function updateCartBadgeUI(count) {
     const cartLink = document.querySelector('a[href="/MiniShop/cart/cart.php"]');
     if (cartLink) {
         let badge = cartLink.querySelector('.absolute');
         if (!badge && count > 0) {
-            // Create badge if it doesn't exist
+            // Sepet etiketi yoksa oluştur
             badge = document.createElement('span');
             badge.className = 'absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center';
             cartLink.appendChild(badge);
@@ -192,3 +189,51 @@ function updateCartBadgeUI(count) {
         }
     }
 }
+
+// Menü aç/kapat işlemleri
+document.addEventListener('DOMContentLoaded', function() {
+    // Kullanıcı menüsü aç/kapat
+    const userMenuButton = document.getElementById('user-menu-button');
+    if (userMenuButton) {
+        userMenuButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const menu = document.getElementById('user-menu');
+            const arrow = document.getElementById('user-menu-arrow');
+            if (menu && arrow) {
+                menu.classList.toggle('hidden');
+                arrow.classList.toggle('rotate-180');
+            }
+        });
+    }
+
+    // Kullanıcı menüsünü dışarı tıklandığında kapat
+    document.addEventListener('click', function(event) {
+        const userMenu = document.getElementById('user-menu');
+        const userMenuButton = document.getElementById('user-menu-button');
+        const arrow = document.getElementById('user-menu-arrow');
+        if (userMenu && userMenuButton && arrow &&
+            !userMenu.contains(event.target) &&
+            !userMenuButton.contains(event.target)) {
+            userMenu.classList.add('hidden');
+            arrow.classList.remove('rotate-180');
+        }
+    });
+
+    // Mobil menü aç/kapat
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    if (mobileMenuButton) {
+        mobileMenuButton.addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            if (menu) menu.classList.toggle('hidden');
+        });
+    }
+});
+
+// Sayfa yüklendiğinde kayıt formu spinner'ını gizle
+document.addEventListener('DOMContentLoaded', function() {
+    const loadingSpinner = document.getElementById('loading-spinner');
+
+    if (loadingSpinner) {
+        loadingSpinner.classList.add('hidden');
+    }
+});

@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.success) {
                 productsGrid.innerHTML = data.html;
                 
-                // Re-attach event listeners for add to cart and wishlist buttons
+                // Sepete ekle ve favoriler butonları için event listener ekle
                 attachEventListeners();
             }
         })

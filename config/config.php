@@ -1,6 +1,8 @@
 <?php
-// Genel proje ayarları
-
-// Hata raporlama ayarları
-error_reporting(E_ALL);
-ini_set("display_errors", 1);
+return [
+    'host' => 'localhost',
+    'port' => '5432',
+    'dbname' => 'minishop',
+    'username' => 'postgres',
+    'password' => 'Eren123'
+];

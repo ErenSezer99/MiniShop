@@ -82,7 +82,7 @@ if ($keyword !== '') {
         $response['html'] = $html;
     }
 } else {
-    // Return all orders if no keyword
+    // Keyword yoksa tüm siparişleri döndür
     $sql = "
         SELECT o.id, o.user_id, o.total_amount, o.status, o.created_at, 
                u.username, o.guest_name, o.guest_email, o.guest_address

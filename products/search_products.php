@@ -77,7 +77,7 @@ if ($keyword !== '') {
         $response['html'] = $html;
     }
 } else {
-    // Return all products if no keyword
+    // Keyword yoksa tüm ürünleri döndür
     $sql = "
         SELECT p.id, p.name, p.description, p.price, p.image, c.name AS category_name
         FROM products p

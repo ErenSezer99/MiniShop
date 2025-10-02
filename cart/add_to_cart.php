@@ -20,17 +20,17 @@ if (is_logged_in()) {
     pg_prepare($dbconn, "check_cart", "SELECT id, quantity FROM cart WHERE user_id=$1 AND product_id=$2");
     $res = pg_execute($dbconn, "check_cart", [$user_id, $product_id]);
     if ($row = pg_fetch_assoc($res)) {
-        // Var, güncelle
+        // Varsa güncelle
         $new_qty = $row['quantity'] + $quantity;
         pg_prepare($dbconn, "update_cart", "UPDATE cart SET quantity=$1 WHERE id=$2");
         pg_execute($dbconn, "update_cart", [$new_qty, $row['id']]);
     } else {
-        // Yok, ekle
+        // Yoksa ekle
         pg_prepare($dbconn, "insert_cart", "INSERT INTO cart (user_id, product_id, quantity) VALUES ($1,$2,$3)");
         pg_execute($dbconn, "insert_cart", [$user_id, $product_id, $quantity]);
     }
-    
-    // Get updated cart count
+
+    // Sepetteki güncel ürün sayısını getir
     $cart_count = get_cart_count();
 } else {
     // Misafir, session tabanlı
@@ -40,8 +40,8 @@ if (is_logged_in()) {
     } else {
         $_SESSION['cart'][$product_id] = $quantity;
     }
-    
-    // Calculate cart count for guest user
+
+    // Misafir kullanıcı için sepetteki ürün sayısını hesapla
     $cart_count = 0;
     if (!empty($_SESSION['cart'])) {
         foreach ($_SESSION['cart'] as $qty) {

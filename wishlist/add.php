@@ -17,7 +17,7 @@ if (!$product_id) {
     exit();
 }
 
-// Wishlist'te zaten var mı kontrol et
+// Favorilerde zaten var mı kontrol et
 pg_prepare($dbconn, "check_wishlist", "SELECT id FROM wishlist WHERE user_id=$1 AND product_id=$2");
 $res_check = pg_execute($dbconn, "check_wishlist", [$user_id, $product_id]);
 

@@ -1,7 +1,7 @@
 <?php
-// Genel kullanılacak fonksiyonlar buraya yazılacak
+// Genel kullanılacak fonksiyonlar sayfası
 
-// tüm proje için tek session kontrol noktası
+// Session kontrol noktası
 if (session_status() !== PHP_SESSION_ACTIVE) {
   session_start();
 }
@@ -28,7 +28,7 @@ function generate_csrf_token()
     session_start();
   }
   if (empty($_SESSION['csrf_token'])) {
-    // güvenli rastgele token üret
+    // Güvenli rastgele token üret
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
   }
   return $_SESSION['csrf_token'];
@@ -40,7 +40,7 @@ function verify_csrf_token($token)
     session_start();
   }
   if (empty($token) || empty($_SESSION['csrf_token'])) return false;
-  // sabit-zamanlı karşılaştırma
+  // Sabit-zamanlı karşılaştırma
   return hash_equals($_SESSION['csrf_token'], $token);
 }
 
@@ -86,7 +86,7 @@ function require_admin()
 {
   if (!is_logged_in() || ($_SESSION['user']['role'] ?? '') !== 'admin') {
     set_flash("Bu sayfaya erişim yetkiniz yok.", "error");
-    redirect('../login.php');
+    redirect('/MiniShop/auth/login.php');
   }
 }
 
@@ -95,12 +95,12 @@ function require_admin()
  */
 function redirect($url)
 {
-  // Check if headers have already been sent
+  // HTTP başlıkları gönderildi mi kontrol
   if (!headers_sent()) {
     header("Location: $url");
     exit();
   } else {
-    // Fallback to JavaScript redirect if headers already sent
+    // Başlıklar gönderildiyse JS ile yönlendir
     echo "<script>window.location.href='$url';</script>";
     echo "<noscript><meta http-equiv='refresh' content='0;url=$url'></noscript>";
     exit();
@@ -116,7 +116,7 @@ function get_cart_count()
   $count = 0;
 
   if (is_logged_in()) {
-    // Kullanıcı login ise veritabanından çek
+    // Kullanıcı giriş yapmış ise veritabanından çek
     $user_id = current_user_id();
     pg_prepare($dbconn, "count_cart", "SELECT SUM(quantity) as total FROM cart WHERE user_id=$1");
     $res = pg_execute($dbconn, "count_cart", [$user_id]);
@@ -236,6 +236,5 @@ function create_order($user_id, $cart_items, $total_amount, $guest_name = null, 
  */
 function send_order_email($order_id)
 {
-  // Örnek flash ile simülasyon
   set_flash("Siparişiniz (#$order_id) başarıyla alındı! Email gönderildi.", "success");
 }

@@ -1,11 +1,11 @@
-// Global variable to track if cart functionality is initialized
+// Sepet başladı mı kontrol
 if (typeof window.cartInitialized === 'undefined') {
     window.cartInitialized = false;
 }
 
-// Initialize cart functionality
+// Sepeti başlat
 function initializeCart() {
-    // Prevent multiple initializations
+    // Birden fazla başlatmayı önle
     if (window.cartInitialized) {
         return;
     }
@@ -28,7 +28,7 @@ function initializeCart() {
             .then(res => res.json())
             .then(data => {
                 showFlashMessage(data.message, data.status);
-                // Update cart badge
+                // Sepet etiketini güncelle
                 if (data.status === 'success' && data.cart_count !== undefined) {
                     updateCartBadgeUI(data.cart_count);
                 }
@@ -61,7 +61,7 @@ function initializeCart() {
             .then(res => res.json())
             .then(data => {
                 if (data.status === 'success') {
-                    // Update cart badge when item is removed
+                    // Ürün silinince sepet etiketini güncelle
                     if (data.cart_count !== undefined) {
                         updateCartBadgeUI(data.cart_count);
                     }
@@ -74,34 +74,34 @@ function initializeCart() {
         });
     });
 
-    // Increase quantity button
+    // Sepetteki ürün miktarını artırma butonu
     document.querySelectorAll('.increase-qty').forEach(btn => {
         btn.addEventListener('click', function(e) {
             e.preventDefault();
             
-            // Prevent multiple rapid clicks with a simple flag
+            // Birden fazla hızlı tıklamayı önleme
             if (this.dataset.processing === 'true') return;
             this.dataset.processing = 'true';
             
             const input = this.parentElement.querySelector('.cart-qty');
             let value = parseInt(input.value) || 1;
             input.value = value + 1;
-            // Update cart quantity directly
+            // Sepet miktarını güncelle
             updateCartQuantity(input, this);
             
-            // Reset processing flag after a short delay
+            // İşlemeyi sıfırla (100ms gecikmeli)
             setTimeout(() => {
                 this.dataset.processing = 'false';
             }, 100);
         });
     });
 
-    // Decrease quantity button
+    // Sepetteki ürün miktarını azaltma butonu
     document.querySelectorAll('.decrease-qty').forEach(btn => {
         btn.addEventListener('click', function(e) {
             e.preventDefault();
             
-            // Prevent multiple rapid clicks with a simple flag
+            // Birden fazla hızlı tıklamayı önleme
             if (this.dataset.processing === 'true') return;
             this.dataset.processing = 'true';
             
@@ -109,15 +109,15 @@ function initializeCart() {
             let value = parseInt(input.value) || 1;
             if (value > 1) {
                 input.value = value - 1;
-                // Update cart quantity directly
+                // Sepet miktarını güncelle
                 updateCartQuantity(input, this);
             } else if (value === 1) {
-                // When quantity is 1 and user clicks decrease, remove the item
+                // Miktar sıfıra düştüğünde ürünü sil
                 input.value = 0;
                 removeCartItem(input);
             }
             
-            // Reset processing flag after a short delay
+            // İşlemeyi sıfırla (100ms gecikmeli)
             setTimeout(() => {
                 this.dataset.processing = 'false';
             }, 100);
@@ -125,7 +125,7 @@ function initializeCart() {
     });
 }
 
-// Function to update cart quantity
+// Sepetteki ürün miktarını güncelleme fonksiyonu
 function updateCartQuantity(input, button = null) {
     setSpinner(true);
     const tr = input.closest('tr');
@@ -140,11 +140,11 @@ function updateCartQuantity(input, button = null) {
     .then(res => res.json())
     .then(data => {
         if (data.status === 'success') {
-            // Update cart badge
+            // Sepet etiketini güncelle
             if (data.cart_count !== undefined) {
                 updateCartBadgeUI(data.cart_count);
             }
-            // Reload immediately for instant feedback
+            // Anında geri bildirim için sayfayı yeniden yükle
             location.reload();
         }
         else showFlashMessage(data.message, 'error');
@@ -153,7 +153,7 @@ function updateCartQuantity(input, button = null) {
     .finally(() => setSpinner(false));
 }
 
-// Function to remove cart item
+// Sepetteki ürünü silme fonksiyonu
 function removeCartItem(input) {
     setSpinner(true);
     const tr = input.closest('tr');
@@ -167,11 +167,11 @@ function removeCartItem(input) {
     .then(res => res.json())
     .then(data => {
         if (data.status === 'success') {
-            // Update cart badge
+            // Sepet etiketini güncelle
             if (data.cart_count !== undefined) {
                 updateCartBadgeUI(data.cart_count);
             }
-            // Remove the row from the table
+            // Tablodan satırı kaldır
             tr.remove();
             showFlashMessage(data.message, 'success');
         }
@@ -181,20 +181,20 @@ function removeCartItem(input) {
     .finally(() => setSpinner(false));
 }
 
-// Function to update cart badge in real-time
+// Sepet etiketini anında güncelleme fonksiyonu
 function updateCartBadge(quantityChange) {
     const cartBadge = document.querySelector('a[href="/MiniShop/cart/cart.php"] .absolute');
     if (cartBadge) {
-        // Get current count from badge
+        // Etiketten şu anki sayıyı al
         let currentCount = parseInt(cartBadge.textContent) || 0;
         let newCount = currentCount + parseInt(quantityChange);
         
-        // Ensure count doesn't go below 0
+        // Miktar sıfırın altına inmesin
         newCount = Math.max(0, newCount);
         
         updateCartBadgeUI(newCount);
     } else if (quantityChange > 0) {
-        // If badge doesn't exist but we're adding items, create it
+        // Etiket yoksa ve ürün ekleniyorsa, etiket oluştur
         const cartLink = document.querySelector('a[href="/MiniShop/cart/cart.php"]');
         if (cartLink) {
             const badge = document.createElement('span');
@@ -205,13 +205,13 @@ function updateCartBadge(quantityChange) {
     }
 }
 
-// Function to update cart badge UI with specific count
+// Sepette belirli sayıda ürün varken etiketi güncelleme
 function updateCartBadgeUI(count) {
     const cartLink = document.querySelector('a[href="/MiniShop/cart/cart.php"]');
     if (cartLink) {
         let badge = cartLink.querySelector('.absolute');
         if (!badge && count > 0) {
-            // Create badge if it doesn't exist
+            // Etiket yoksa oluştur
             badge = document.createElement('span');
             badge.className = 'absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center';
             cartLink.appendChild(badge);
@@ -228,7 +228,23 @@ function updateCartBadgeUI(count) {
     }
 }
 
-// Initialize cart functionality when DOM is loaded
+// Ödeme formu spinner yönetimi
+document.addEventListener('DOMContentLoaded', function() {
+    const checkoutForm = document.getElementById('checkout-form');
+    const loadingSpinner = document.getElementById('loading-spinner');
+
+    if (checkoutForm) {
+        checkoutForm.addEventListener('submit', function(e) {
+            setTimeout(function() {
+                if (loadingSpinner) {
+                    loadingSpinner.classList.add('hidden');
+                }
+            }, 100);
+        });
+    }
+});
+
+// DOM yüklendiğinde sepeti başlat
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeCart);
 } else {

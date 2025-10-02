@@ -42,22 +42,21 @@ if (is_logged_in()) {
 }
 ?>
 
-<div class="flex justify-between items-center mb-8">
-    <h2 class="text-3xl font-bold text-gray-800">Ürünler</h2>
+<div class="mb-8">
+    <h2 class="text-3xl font-bold text-gray-800 mb-4">Ürünler</h2>
 
     <!-- Search UI (AJAX) -->
     <div class="products-header-actions">
-        <div class="relative">
+        <div class="relative flex-grow max-w-xs">
             <input
                 type="search"
                 id="product-search"
                 name="keyword"
                 placeholder="Ürün ara..."
-                class="form-input"
-                autocomplete="off"
-                style="width: 250px;">
+                class="form-input w-full"
+                autocomplete="off">
         </div>
-        <a href="/MiniShop/cart/cart.php" class="btn-cart flex items-center">
+        <a href="/MiniShop/cart/cart.php" class="btn-cart">
             <i class="fas fa-shopping-cart mr-2"></i> Sepete Git
         </a>
     </div>

@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $guest_email = sanitize($_POST['guest_email'] ?? '');
     $guest_address = sanitize($_POST['guest_address'] ?? '');
 
-    // Email validation
+    // Email doğrulama
     if (!filter_var($guest_email, FILTER_VALIDATE_EMAIL)) {
         $error_message = "Geçersiz e-posta adresi.";
     } else {
@@ -238,24 +238,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 <?php endif; ?>
-
-<script>
-    // Handle checkout form submission to prevent infinite spinner on validation errors
-    document.addEventListener('DOMContentLoaded', function() {
-        const checkoutForm = document.getElementById('checkout-form');
-        const loadingSpinner = document.getElementById('loading-spinner');
-
-        if (checkoutForm) {
-            checkoutForm.addEventListener('submit', function(e) {
-                // Add a small delay to ensure spinner is hidden after form validation
-                setTimeout(function() {
-                    if (loadingSpinner) {
-                        loadingSpinner.classList.add('hidden');
-                    }
-                }, 100);
-            });
-        }
-    });
-</script>
 
 <?php include_once __DIR__ . '/../includes/footer.php'; ?>

@@ -1,6 +1,6 @@
-// Wishlist functionality - Only initialize if we're on a page that needs it
+// Favorilerim sayfası - Yalnızca ihtiyaç halinde başlat
 document.addEventListener('DOMContentLoaded', () => {
-    // Only run this code on pages that have wishlist buttons with data-action attribute
+    // Bu kodu yalnızca data-action varsa çalıştır
     const wishlistButtons = document.querySelectorAll('.btn-fav[data-action]');
     
     if (wishlistButtons.length > 0) {
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             btn.title = 'Favorilere ekle';
                             btn.classList.remove('active');
 
-                            // Sadece wishlist/index.php sayfasındaysak DOM'dan sil
+                            // Sadece favoriler sayfasındaysak DOM'dan sil
                             if (window.location.pathname.includes('/wishlist/index.php')) {
                                 const card = btn.closest('.product-card');
                                 if (card) card.remove();

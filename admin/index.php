@@ -8,28 +8,28 @@ require_admin();
 // Basit istatistik sorguları
 $products_count = $categories_count = $orders_count = $users_count = "-";
 
-// Products sayısı
+// Ürün sayısı
 $res = pg_query($dbconn, "SELECT COUNT(*) AS count FROM products");
 if ($res) {
     $row = pg_fetch_assoc($res);
     $products_count = (int)$row['count'];
 }
 
-// Categories sayısı
+// Kategori sayısı
 $res = pg_query($dbconn, "SELECT COUNT(*) AS count FROM categories");
 if ($res) {
     $row = pg_fetch_assoc($res);
     $categories_count = (int)$row['count'];
 }
 
-// Orders sayısı
+// Sipariş sayısı
 $res = pg_query($dbconn, "SELECT COUNT(*) AS count FROM orders");
 if ($res) {
     $row = pg_fetch_assoc($res);
     $orders_count = (int)$row['count'];
 }
 
-// Users sayısı
+// Kullanıcı sayısı
 $res = pg_query($dbconn, "SELECT COUNT(*) AS count FROM users");
 if ($res) {
     $row = pg_fetch_assoc($res);

@@ -18,7 +18,7 @@ if (is_logged_in()) {
     pg_prepare($dbconn, "delete_cart_item", "DELETE FROM cart WHERE user_id=$1 AND product_id=$2");
     pg_execute($dbconn, "delete_cart_item", [$user_id, $product_id]);
 
-    // Get updated cart count
+    // Sepetteki güncel ürün sayısını al
     $cart_count = get_cart_count();
 } else {
     if (isset($_SESSION['cart'][$product_id])) {
@@ -28,7 +28,7 @@ if (is_logged_in()) {
         exit;
     }
 
-    // Calculate cart count for guest user
+    // Misafir kullanıcı için sepetteki ürün sayısını hesapla
     $cart_count = 0;
     if (!empty($_SESSION['cart'])) {
         foreach ($_SESSION['cart'] as $qty) {

@@ -6,8 +6,8 @@ include_once "../config/database.php";
 
 $flash = get_flash();
 $message = "";
-$username = "";  // Initialize username as empty string
-$email = "";     // Initialize email as empty string
+$username = "";
+$email = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // CSRF kontrolü
@@ -144,25 +144,5 @@ $csrf_token = generate_csrf_token();
         </p>
     </div>
 </div>
-
-<script>
-    // Handle registration form submission to prevent infinite spinner on validation errors
-    document.addEventListener('DOMContentLoaded', function() {
-        const registerForm = document.getElementById('register-form');
-        const loadingSpinner = document.getElementById('loading-spinner');
-
-        // Always hide spinner on page load for registration page
-        if (loadingSpinner) {
-            loadingSpinner.classList.add('hidden');
-        }
-
-        if (registerForm) {
-            registerForm.addEventListener('submit', function(e) {
-                // For failed validations, spinner should be hidden immediately after page load
-                // For successful submissions, spinner will show during navigation
-            });
-        }
-    });
-</script>
 
 <?php include "../includes/footer.php"; ?>
